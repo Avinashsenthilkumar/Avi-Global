@@ -1,46 +1,34 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
 import ProjectThumb from "@/components/ProjectThumb";
 
-export default function ProjectCard({ project, index = 0 }) {
+export default function ProjectCard({ project, index = 0, tall = false }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.7, delay: (index % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+    <Link
+      href={`/projects/${project.slug}`}
+      data-cursor="view"
+      data-cursor-label="View"
+      className="group block"
     >
-      <Link
-        href={`/projects/${project.slug}`}
-        data-cursor-hover
-        className="group block rounded-2xl overflow-hidden border border-white/10 bg-ink-soft/40 gold-border-hover"
+      <div
+        data-clip=""
+        style={{ "--d": `${(index % 2) * 120}ms` }}
+        className={`relative overflow-hidden rounded-[1.75rem] ${tall ? "aspect-[4/5]" : "aspect-[4/3]"}`}
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden">
-          <ProjectThumb
-            slug={project.slug}
-            name={project.name}
-            category={project.category}
-            className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-105"
-          />
+        <ProjectThumb slug={project.slug} name={project.name} className="absolute inset-0 h-full w-full" />
+        <span className="absolute right-4 top-4 grid h-12 w-12 place-items-center rounded-full bg-white text-graphite transition-all duration-500 ease-out group-hover:-rotate-45 md:opacity-0 md:group-hover:opacity-100">
+          →
+        </span>
+      </div>
+      <div className="mt-5 flex items-baseline justify-between gap-4 px-1">
+        <div>
+          <p className="label text-ember">{project.category}</p>
+          <h3 className="mt-2 font-display text-2xl md:text-3xl uppercase leading-none transition-colors duration-300 group-hover:text-ember">
+            {project.name}
+          </h3>
+          {project.location && <p className="mt-2 text-sm text-steel">{project.location}</p>}
         </div>
-        <div className="p-6">
-          <p className="text-xs tracking-widest2 uppercase text-gold mb-2">
-            {project.category}
-          </p>
-          <h3 className="font-display font-medium text-xl uppercase tracking-tight">{project.name}</h3>
-          {project.location && (
-            <p className="mt-1 text-sm text-muted">{project.location}</p>
-          )}
-          <div className="mt-4 flex items-center gap-2 text-white/70 group-hover:text-gold transition-colors duration-300">
-            <span className="text-xs tracking-widest2 uppercase">View Project</span>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M1 7H13M13 7L7.5 1.5M13 7L7.5 12.5" stroke="currentColor" strokeWidth="1.3" />
-            </svg>
-          </div>
-        </div>
-      </Link>
-    </motion.div>
+        <span className="font-display text-sm text-steel-light">{String(index + 1).padStart(2, "0")}</span>
+      </div>
+    </Link>
   );
 }

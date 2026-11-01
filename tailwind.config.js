@@ -1,39 +1,32 @@
 /** @type {import('tailwindcss').Config} */
+// Light "platinum" system: a cool silver-white page, graphite type and
+// panels, and the ember gradient used sparingly as the accent. The logo's
+// gold + silver + black reads cleanly on this palette.
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx}",
-    "./components/**/*.{js,jsx}",
-  ],
+  content: ["./app/**/*.{js,jsx}", "./components/**/*.{js,jsx}", "./lib/**/*.{js,jsx}"],
   theme: {
     extend: {
       colors: {
-        ink: {
-          DEFAULT: "#050505",
-          soft: "#101010",
-          softer: "#151515",
-        },
-        gold: {
-          DEFAULT: "#F2661C",
-          light: "#FFB562",
-          deep: "#B3300C",
-        },
-        silver: "#C0C0C0",
-        muted: "#A0A0A0",
+        paper: { DEFAULT: "#F1F2F4", 2: "#E8EAEE", 3: "#DDE0E5" },
+        card: "#FFFFFF",
+        graphite: { DEFAULT: "#0D0F12", 2: "#16191E", 3: "#22262D" },
+        steel: { DEFAULT: "#5A616C", light: "#8A919C" },
+        line: "rgba(13,15,18,0.10)",
+        ember: { DEFAULT: "#E85D10", light: "#FFAA4C", deep: "#B4320F" },
       },
       fontFamily: {
-        display: ["var(--font-display)", "sans-serif"],
-        body: ["var(--font-body)", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
+        body: ["var(--font-body)", "system-ui", "sans-serif"],
       },
-      letterSpacing: {
-        widest2: "0.28em",
-      },
+      letterSpacing: { label: "0.24em" },
       backgroundImage: {
-        "gold-gradient": "linear-gradient(135deg, #FFB562 0%, #F2661C 55%, #B3300C 100%)",
-        "radial-glow": "radial-gradient(ellipse at center, rgba(242,102,28,0.18) 0%, rgba(5,5,5,0) 70%)",
+        "ember-gradient": "linear-gradient(120deg, #FFAA4C 0%, #E85D10 52%, #B4320F 100%)",
       },
       transitionTimingFunction: {
-        premium: "cubic-bezier(0.22, 1, 0.36, 1)",
+        out: "cubic-bezier(0.22, 1, 0.36, 1)",
+        inout: "cubic-bezier(0.76, 0, 0.24, 1)",
       },
+      borderRadius: { "4xl": "2rem" },
     },
   },
   plugins: [],

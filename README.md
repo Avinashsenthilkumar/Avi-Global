@@ -1,6 +1,6 @@
 # AVI GLOBAL SOLUTIONS — Website
 
-Built with Next.js 14 (App Router), Tailwind CSS, and Framer Motion.
+Built with Next.js 14 (App Router) and Tailwind CSS, with Lenis for smooth scrolling.
 Includes a Next.js API route (`/api/contact`) as the backend for the
 project enquiry form.
 
@@ -59,38 +59,29 @@ Or any Node host that supports Next.js (`npm run build && npm start`).
 
 ## Design system
 
-- **Type**: Fraunces (serif display, used sparingly in italic for one gold
-  accent moment in the Hero) + Manrope (body/labels).
-- **Color**: warm ember/amber accent (`#F2661C` → `#FFB562` → `#B3300C`) on
-  black — set in one place, `tailwind.config.js` `colors.gold` and
-  `backgroundImage["gold-gradient"]` — so it can be retuned site-wide by
-  editing those two values.
-- **Signature element**: the "Ascent Rail" (`components/ScrollRail.js`) — a
-  thin gold line fixed to the left edge on desktop that fills as you scroll
-  the page, echoing the mountain-peak "A" in your mark and the ELEVATE line
-  in your tagline.
-- **Capabilities slider**: `components/CapabilitiesSlider.js` — an
-  interactive dot/arrow carousel on the homepage walking through five core
-  services, each with a real project example where one exists (no invented
-  stats).
-- **Smooth scroll**: `components/SmoothScroll.js` wraps the whole site in
-  Lenis for momentum-based scrolling; disabled automatically under
-  `prefers-reduced-motion`.
-- **Cursor**: `components/CustomCursor.js` — a two-layer cursor (an exact
-  inner dot + a spring-lagged outer ring), driven by `requestAnimationFrame`
-  rather than CSS transitions, with the native OS cursor hidden only once
-  it's confirmed running.
-- **Scroll motion**: `components/RevealText.js` (line-by-line curtain
-  reveal, used for every major heading), Hero parallax + word-stagger,
-  `components/Marquee.js` (infinite service strip), horizontal drag-scroll
-  project gallery on the homepage, and `components/MagneticButton.js` on
-  every primary CTA.
-- All motion respects `prefers-reduced-motion` (see `app/globals.css`).
+- **Palette**: light platinum page (`paper`), graphite type and feature panels,
+  ember gradient as the accent. All tokens live in `tailwind.config.js`.
+- **Type**: Fraunces (display) + Manrope (body).
+- **Motion engine**: no animation library. `components/MotionObserver.js` adds
+  `is-in` to anything with `data-reveal`, `data-clip`, `data-draw` or
+  `data-inview` when it scrolls into view; `app/globals.css` does the
+  animating. `lib/motion.js` provides `useScrollProgress` for scroll-linked
+  effects. Everything respects `prefers-reduced-motion`.
+- **Signature moments**: intro curtain (`VideoIntro`), cursor-tracking
+  character on a lit stage with pointer spotlight + 3D tilt (`HeroStage`),
+  velocity-reactive marquee, stacking service cards (`ServicesStack`), pinned
+  horizontal project gallery (`ProjectsShowcase`), scroll-scrubbed statement
+  text (`ScrubText`), scroll-drawn process line (`ProcessTimeline`),
+  self-drawing globe (`GlobalVision`).
+- **Mobile**: bottom tab bar (`MobileTabBar`), swipe carousels, installable
+  as an app via `app/manifest.js`, safe-area aware.
+- **Character frames**: `public/images/mascot/desktop` (full resolution) and
+  `/mobile` (phone weight), 60 frames each.
 
 ## Notes
 
 - All copy, project names, and service lists come directly from the
   brief — no invented stats, testimonials, or client logos.
 - `prefers-reduced-motion` is respected globally (see `app/globals.css`).
-- The phone number (+91 79040 06912) is wired into `tel:` links and the
+- The phone number (+91 63825 35043) is wired into `tel:` links and the
   WhatsApp button/CTA across the site.

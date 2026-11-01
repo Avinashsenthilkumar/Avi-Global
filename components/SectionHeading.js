@@ -1,21 +1,26 @@
-import Reveal from "@/components/Reveal";
 import RevealText from "@/components/RevealText";
+import Reveal from "@/components/Reveal";
 
-export default function SectionHeading({ eyebrow, title, align = "left", className = "" }) {
+export default function SectionHeading({ eyebrow, title, intro, align = "left", tone = "light", className = "" }) {
+  const center = align === "center";
+  const muted = tone === "dark" ? "text-white/60" : "text-steel";
   return (
-    <div className={`${align === "center" ? "text-center mx-auto" : ""} ${className}`}>
+    <div className={`${center ? "text-center mx-auto" : ""} ${className}`}>
       {eyebrow && (
-        <Reveal>
-          <span className="block text-xs tracking-widest2 uppercase text-gold mb-4">
-            {eyebrow}
-          </span>
+        <Reveal className={`flex items-center gap-3 mb-6 ${center ? "justify-center" : ""}`}>
+          <span className="h-px w-8 bg-ember" />
+          <span className="label text-ember">{eyebrow}</span>
         </Reveal>
       )}
       <RevealText
         text={title}
-        as="h2"
-        className="font-display font-medium uppercase text-3xl sm:text-4xl md:text-5xl leading-[1.08] tracking-tight"
+        className="font-display font-medium uppercase tracking-[-0.01em] leading-[1.02] text-[2.1rem] sm:text-5xl lg:text-[3.9rem]"
       />
+      {intro && (
+        <Reveal delay={0.15} as="p" className={`mt-6 max-w-xl text-[15px] md:text-base leading-relaxed ${muted} ${center ? "mx-auto" : ""}`}>
+          {intro}
+        </Reveal>
+      )}
     </div>
   );
 }

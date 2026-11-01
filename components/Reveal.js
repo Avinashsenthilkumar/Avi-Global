@@ -1,24 +1,24 @@
-"use client";
-
-import { motion } from "framer-motion";
+// Fades/lifts its children in when scrolled into view. Pure markup — the
+// site-wide MotionObserver adds `is-in`, and globals.css animates it — so
+// this works inside server components too.
 
 export default function Reveal({
   children,
   delay = 0,
-  y = 28,
+  variant = "up", // up | left | scale
+  as: Tag = "div",
   className = "",
-  as = "div",
+  style,
+  ...rest
 }) {
-  const MotionTag = motion[as] || motion.div;
   return (
-    <MotionTag
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+    <Tag
+      data-reveal={variant === "up" ? "" : variant}
       className={className}
+      style={{ "--d": `${Math.round(delay * 1000)}ms`, ...style }}
+      {...rest}
     >
       {children}
-    </MotionTag>
+    </Tag>
   );
 }

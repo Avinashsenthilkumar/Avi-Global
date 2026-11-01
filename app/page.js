@@ -1,27 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import VideoIntro from "@/components/VideoIntro";
 import Hero from "@/components/Hero";
-import Reveal from "@/components/Reveal";
-import SectionHeading from "@/components/SectionHeading";
-import CapabilitiesSlider from "@/components/CapabilitiesSlider";
-import ProjectGallery from "@/components/ProjectGallery";
 import Marquee from "@/components/Marquee";
+import ScrubText from "@/components/ScrubText";
+import Reveal from "@/components/Reveal";
+import ServicesStack from "@/components/ServicesStack";
+import ProjectsShowcase from "@/components/ProjectsShowcase";
+import WhyUs from "@/components/WhyUs";
+import SectionHeading from "@/components/SectionHeading";
+import ProcessTimeline from "@/components/ProcessTimeline";
 import GlobalVision from "@/components/GlobalVision";
 import FinalCTA from "@/components/FinalCTA";
-import { homeServices, whyUs } from "@/lib/services";
+import { homeServices, whyUs, processSteps } from "@/lib/services";
 import { projects } from "@/lib/projects";
 
-const introCards = [
-  { title: "WEB DEVELOPMENT" },
-  { title: "E-COMMERCE" },
-  { title: "WEB APPLICATIONS" },
-  { title: "MOBILE APPLICATIONS" },
+const CAPABILITIES = [
+  { title: "Web Development", icon: <path d="M4 6h24v16H4zM4 26h24M12 18l-3-3 3-3M20 12l3 3-3 3" /> },
+  { title: "E-Commerce", icon: <path d="M6 9h20l-2 11H8L6 9zM6 9 5 5H2M12 26a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM22 26a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" /> },
+  { title: "Web Applications", icon: <path d="M4 8a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 12h24M9 17h6M9 20h10" /> },
+  { title: "Mobile Applications", icon: <path d="M11 3h10a2 2 0 0 1 2 2v22a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM14 25h4" /> },
 ];
-
-const marqueeItems = homeServices.map((s) => s.title);
 
 export default function HomePage() {
   const [revealed, setRevealed] = useState(false);
@@ -31,33 +31,35 @@ export default function HomePage() {
       <VideoIntro onComplete={() => setRevealed(true)} />
       <Hero revealed={revealed} />
 
-      <Marquee items={marqueeItems} />
+      <Marquee items={homeServices.map((s) => s.title)} />
 
-      {/* Section 01 — Introduction */}
-      <section className="py-16 md:py-24 px-6 md:px-10">
+      {/* Introduction — a statement that resolves word by word on scroll */}
+      <section className="px-4 sm:px-6 md:px-10 py-20 md:py-32">
         <div className="mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-2 gap-12 items-start">
-            <SectionHeading
-              eyebrow="Introduction"
-              title={"TECHNOLOGY BUILT\nAROUND YOUR BUSINESS."}
-            />
-            <Reveal delay={0.1}>
-              <p className="text-sm md:text-base text-muted leading-relaxed">
-                AVI GLOBAL SOLUTIONS helps businesses transform ideas into
-                reliable digital products. We combine strategy, design,
-                development and technology to create solutions that are built
-                to perform, scale and evolve.
-              </p>
-            </Reveal>
-          </div>
+          <Reveal className="mb-10 flex items-center gap-3">
+            <span className="h-px w-8 bg-ember" />
+            <span className="label text-ember">Technology built around your business</span>
+          </Reveal>
+          <ScrubText
+            className="max-w-6xl font-display text-[1.9rem] sm:text-4xl md:text-5xl lg:text-[3.6rem] leading-[1.12] tracking-[-0.01em]"
+            text="AVI GLOBAL SOLUTIONS helps businesses transform ideas into *reliable* digital products. We combine strategy, design, development and technology to create solutions that are built to *perform,* *scale* and *evolve.*"
+          />
 
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {introCards.map((card, i) => (
-              <Reveal key={card.title} delay={i * 0.06}>
-                <div className="rounded-2xl border border-white/10 bg-ink-soft/40 p-6 h-full flex items-center justify-center text-center">
-                  <span className="font-display text-xs md:text-sm tracking-widest2 uppercase text-white/80">
-                    {card.title}
+          <div className="mt-16 md:mt-24 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+            {CAPABILITIES.map((c, i) => (
+              <Reveal key={c.title} delay={i * 0.08}>
+                <div
+                  data-cursor="hover"
+                  className="group relative h-full overflow-hidden rounded-3xl border border-line bg-card p-5 md:p-7 transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_30px_60px_-30px_rgba(13,15,18,0.35)]"
+                >
+                  <div className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-ember-gradient transition-transform duration-700 ease-out group-hover:scale-x-100" />
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-paper text-graphite transition-colors duration-500 group-hover:bg-graphite group-hover:text-ember-light">
+                    <svg viewBox="0 0 32 32" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      {c.icon}
+                    </svg>
                   </span>
+                  <p className="mt-10 md:mt-14 font-display text-lg md:text-2xl uppercase leading-tight">{c.title}</p>
+                  <span className="label mt-2 block text-steel">0{i + 1}</span>
                 </div>
               </Reveal>
             ))}
@@ -65,54 +67,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 02 — Capabilities slider */}
-      <div className="bg-ink-soft/20">
-        <CapabilitiesSlider slides={homeServices.slice(0, 5)} />
-      </div>
+      <ServicesStack services={homeServices} />
 
-      {/* Section 03 — Featured Projects */}
-      <section className="py-16 md:py-24 px-6 md:px-10">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <SectionHeading eyebrow="Our Work" title={"OUR WORK.\nBUILT FOR THE REAL WORLD."} />
-            <Reveal delay={0.1}>
-              <Link
-                href="/projects"
-                data-cursor-hover
-                className="inline-flex items-center gap-2 text-xs tracking-widest2 uppercase text-gold border border-gold/40 rounded-full px-6 py-3 hover:bg-gold hover:text-ink transition-colors duration-300 whitespace-nowrap"
-              >
-                View All Projects
-              </Link>
-            </Reveal>
-          </div>
+      <ProjectsShowcase projects={projects.slice(0, 6)} />
 
-          <div className="mt-16">
-            <ProjectGallery projects={projects.slice(0, 6)} />
-          </div>
-        </div>
-      </section>
+      <WhyUs items={whyUs} />
 
-      {/* Section 04 — Why AVI GLOBAL SOLUTIONS */}
-      <section className="py-16 md:py-24 px-6 md:px-10 bg-ink-soft/20">
+      {/* Process */}
+      <section className="px-4 sm:px-6 md:px-10 py-20 md:py-32">
         <div className="mx-auto max-w-7xl">
           <SectionHeading
-            eyebrow="Why Avi Global Solutions"
-            title={"BUILT DIFFERENT.\nBUILT FOR BUSINESS."}
             align="center"
-            className="max-w-2xl mx-auto"
+            eyebrow="Our process"
+            title={"From idea\n*to impact.*"}
+            intro="Seven clear stages, one accountable team — so you always know what's happening and what comes next."
           />
-          <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {whyUs.map((item, i) => (
-              <Reveal key={item.number} delay={(i % 3) * 0.08}>
-                <div className="border-t border-white/10 pt-6">
-                  <span className="font-display text-sm text-gold">{item.number}</span>
-                  <h3 className="mt-3 font-display font-medium uppercase text-lg tracking-tight">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-muted leading-relaxed">{item.text}</p>
-                </div>
-              </Reveal>
-            ))}
+          <div className="mx-auto mt-16 md:mt-24 max-w-5xl">
+            <ProcessTimeline steps={processSteps} />
           </div>
         </div>
       </section>

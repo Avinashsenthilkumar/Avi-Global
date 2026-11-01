@@ -1,191 +1,131 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import Logo from "@/components/Logo";
+import RevealText from "@/components/RevealText";
 import MagneticButton from "@/components/MagneticButton";
-import HeroCharacter from "@/components/HeroCharacter";
-
-const headlineWords = [
-  ["WE", "BUILD"],
-  ["DIGITAL", "SOLUTIONS"],
-  ["THAT", "MOVE", "BUSINESS"],
-  ["FORWARD."],
-];
+import HeroStage from "@/components/HeroStage";
+import { useScrollProgress } from "@/lib/motion";
+import { siteConfig } from "@/lib/config";
 
 export default function Hero({ revealed }) {
   const sectionRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end start"],
+  const textRef = useRef(null);
+  const stageWrapRef = useRef(null);
+
+  // Scroll-out: copy drifts up and fades, the stage eases back slightly.
+  useScrollProgress(sectionRef, (p) => {
+    const out = Math.max(0, (p - 0.5) * 2);
+    if (textRef.current) {
+      textRef.current.style.transform = `translate3d(0, ${out * -80}px, 0)`;
+      textRef.current.style.opacity = String(1 - out * 0.9);
+    }
+    if (stageWrapRef.current) {
+      stageWrapRef.current.style.transform = `translate3d(0, ${out * 40}px, 0) scale(${1 - out * 0.06})`;
+    }
   });
-  const markY = useTransform(scrollYProgress, [0, 1], ["0%", "35%"]);
-  const markRotate = useTransform(scrollYProgress, [0, 1], [0, 18]);
-  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  const fade = (delay) =>
+    `transition-all duration-1000 ease-out ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`;
+  const delayStyle = (ms) => ({ transitionDelay: revealed ? `${ms}ms` : "0ms" });
 
   return (
-    <motion.section
+    <section
       ref={sectionRef}
-      initial={{ opacity: 0 }}
-      animate={revealed ? { opacity: 1 } : {}}
-      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-      className="relative min-h-screen overflow-hidden px-6 md:px-10"
+      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-28 md:pt-32 pb-14 md:pb-20 lg:min-h-[100svh]"
     >
-      <div className="noise-overlay" />
-      <div className="pointer-events-none absolute inset-0 bg-radial-glow" />
-
-      {/* Ghost brand mark — faint depth layer behind the character */}
-      <motion.div
-        style={{ y: markY, rotate: markRotate }}
-        className="pointer-events-none absolute -right-16 top-1/2 -translate-y-1/2 w-[60vw] max-w-[640px] opacity-[0.05] animate-drift"
-        aria-hidden="true"
-      >
-        <Logo variant="mark" className="w-full h-auto" />
-      </motion.div>
-
-      {/* Character stage — a soft spotlight behind the figure plus a floor
-          shadow beneath it. Doing this in CSS rather than baking a backdrop
-          into the frames keeps the edges clean against the dark theme and
-          means the intensity is tunable here in one place. */}
+      {/* Ambient light + dot grid */}
+      <div className="pointer-events-none absolute -left-40 -top-40 h-[620px] w-[620px] rounded-full bg-ember/20 blur-[140px]" />
+      <div className="pointer-events-none absolute right-[-10%] bottom-[-20%] h-[520px] w-[520px] rounded-full bg-[#9AA3B2]/30 blur-[140px]" />
       <div
-        className="hidden md:block pointer-events-none absolute right-[4%] xl:right-[8%] bottom-0 top-28 md:w-[20vw] md:max-w-[240px] lg:w-[22vw] lg:max-w-[300px] xl:w-[24vw] xl:max-w-[360px] z-[4]"
-        aria-hidden="true"
-      >
-        {/* Spotlight */}
-        <div
-          className="absolute left-1/2 top-[8%] h-[78%] w-[190%] -translate-x-1/2 rounded-full blur-3xl opacity-50"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 45%, rgba(242,102,28,0.30) 0%, rgba(242,102,28,0.10) 42%, rgba(5,5,5,0) 72%)",
-          }}
-        />
-        {/* Cool rim fill, keeps him from reading as pasted-on */}
-        <div
-          className="absolute left-1/2 top-[18%] h-[62%] w-[135%] -translate-x-1/2 rounded-full blur-2xl opacity-40"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 50%, rgba(255,181,98,0.16) 0%, rgba(5,5,5,0) 70%)",
-          }}
-        />
-        {/* Floor shadow — grounds the figure */}
-        <div
-          className="absolute bottom-[2%] left-1/2 h-[5%] w-[78%] -translate-x-1/2 rounded-[50%] blur-xl opacity-70"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 70%)",
-          }}
-        />
-      </div>
+        className="dot-grid pointer-events-none absolute inset-0 opacity-60"
+        style={{ maskImage: "radial-gradient(ellipse at 30% 40%, #000 10%, transparent 70%)", WebkitMaskImage: "radial-gradient(ellipse at 30% 40%, #000 10%, transparent 70%)" }}
+      />
 
-      {/* Character — head-turn frames driven by cursor position. Inset from
-          the top so he clears the fixed header rather than running under it.
-          Frames are tightly cropped to the figure, so the box is narrow. */}
-      <HeroCharacter className="hidden md:block pointer-events-none absolute right-[4%] md:w-[20vw] md:max-w-[240px] lg:w-[22vw] lg:max-w-[300px] xl:w-[24vw] xl:max-w-[360px] xl:right-[8%] bottom-0 top-28 z-[5]" />
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-8">
+        {/* Copy */}
+        <div ref={textRef} className={`lg:col-span-7 ${revealed ? "is-in" : ""}`}>
+          <div className={`mb-7 flex items-center gap-3 ${fade()}`} style={delayStyle(100)}>
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-ember animate-[pulse-ring_1.8s_ease-out_infinite]" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-ember" />
+            </span>
+            <span className="label text-steel">Technology &amp; Digital Solutions</span>
+          </div>
 
-      <motion.div
-        style={{ y: contentY, opacity: contentOpacity }}
-        className="relative z-10 mx-auto max-w-7xl min-h-screen flex flex-col justify-center pt-32 pb-24"
-      >
-        <div className="max-w-3xl lg:max-w-[52%]">
-          <motion.span
-            initial={{ opacity: 0, y: 12 }}
-            animate={revealed ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="block text-xs tracking-widest2 uppercase text-muted mb-8"
+          <RevealText
+            as="h1"
+            trigger="manual"
+            delay={0.25}
+            stagger={0.11}
+            text={"We build\n*digital solutions*\nthat move\nbusiness forward."}
+            className="font-display font-medium uppercase leading-[0.95] tracking-[-0.02em] text-[2.9rem] sm:text-6xl md:text-7xl xl:text-[5.6rem]"
+          />
+
+          <p
+            className={`mt-8 max-w-[34rem] text-[15px] md:text-[17px] leading-relaxed text-steel ${fade()}`}
+            style={delayStyle(850)}
           >
-            Technology &amp; Digital Solutions
-          </motion.span>
+            From powerful websites and e-commerce platforms to custom web applications and mobile apps,
+            AVI GLOBAL SOLUTIONS delivers end-to-end digital solutions built for modern businesses.
+          </p>
 
-          <h1 className="font-display font-medium uppercase leading-[0.98] text-5xl sm:text-6xl md:text-7xl lg:text-[4.6rem]">
-            {headlineWords.map((line, li) => (
-              <span key={li} className="block overflow-hidden">
-                <motion.span
-                  className="flex flex-wrap gap-x-4"
-                  variants={{
-                    hidden: {},
-                    show: {
-                      transition: { staggerChildren: 0.06, delayChildren: 0.3 + li * 0.09 },
-                    },
-                  }}
-                  initial="hidden"
-                  animate={revealed ? "show" : "hidden"}
-                >
-                  {line.map((word, wi) => {
-                    const isGold = li === 1;
-                    return (
-                      <motion.span
-                        key={wi}
-                        variants={{
-                          hidden: { y: "115%" },
-                          show: {
-                            y: "0%",
-                            transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] },
-                          },
-                        }}
-                        className={
-                          isGold
-                            ? "italic-serif font-normal text-gradient-gold"
-                            : ""
-                        }
-                      >
-                        {word}
-                      </motion.span>
-                    );
-                  })}
-                </motion.span>
+          <div className={`mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 ${fade()}`} style={delayStyle(1000)}>
+            <MagneticButton>
+              <Link
+                href="/contact"
+                data-cursor="hover"
+                className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-full bg-graphite px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-white"
+              >
+                Start a Project
+                <span className="grid h-6 w-6 place-items-center rounded-full bg-ember-gradient transition-transform duration-500 ease-out group-hover:rotate-[-45deg]">
+                  <Arrow />
+                </span>
+              </Link>
+            </MagneticButton>
+            <MagneticButton>
+              <Link
+                href="/projects"
+                data-cursor="hover"
+                className="inline-flex w-full sm:w-auto items-center justify-center rounded-full border border-graphite/20 bg-white/60 px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-graphite backdrop-blur transition-colors duration-300 hover:border-graphite"
+              >
+                Explore Our Work
+              </Link>
+            </MagneticButton>
+          </div>
+
+          <div className={`mt-12 hidden md:flex items-center gap-6 text-[12px] text-steel ${fade()}`} style={delayStyle(1150)}>
+            {siteConfig.regions.map((r, i) => (
+              <span key={r} className="flex items-center gap-6">
+                {i > 0 && <span className="h-3 w-px bg-graphite/20" />}
+                {r}
               </span>
             ))}
-          </h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={revealed ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.9 }}
-            className="mt-8 text-sm md:text-base text-muted leading-relaxed max-w-md"
-          >
-            From powerful websites and e-commerce platforms to custom web
-            applications and mobile apps, AVI GLOBAL SOLUTIONS delivers
-            end-to-end digital solutions built for modern businesses.
-          </motion.p>
+          </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={revealed ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 1.05 }}
-          className="mt-14 flex flex-col sm:flex-row items-start sm:items-center gap-5"
-        >
-          <MagneticButton>
-            <Link
-              href="/contact"
-              data-cursor-hover
-              className="inline-flex items-center rounded-full bg-gold-gradient px-8 py-3.5 text-xs tracking-widest2 uppercase text-ink font-medium"
-            >
-              Start a Project
-            </Link>
-          </MagneticButton>
-          <MagneticButton>
-            <Link
-              href="/projects"
-              data-cursor-hover
-              className="inline-flex items-center rounded-full border border-gold/50 px-8 py-3.5 text-xs tracking-widest2 uppercase text-white hover:border-gold hover:text-gold transition-colors duration-300"
-            >
-              Explore Our Work
-            </Link>
-          </MagneticButton>
-        </motion.div>
-      </motion.div>
+        {/* Stage */}
+        <div ref={stageWrapRef} className="lg:col-span-5 h-[64svh] min-h-[440px] max-h-[760px] lg:h-[78svh] will-change-transform">
+          <HeroStage revealed={revealed} />
+        </div>
+      </div>
 
-      <motion.div
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute bottom-10 left-6 md:left-10 flex flex-col items-start gap-2 text-muted z-10"
-      >
-        <span className="h-8 w-px bg-gradient-to-b from-transparent to-gold" />
-        <span className="text-[10px] tracking-widest2 uppercase">Scroll to Explore</span>
-      </motion.div>
-    </motion.section>
+      {/* Scroll cue */}
+      <div className={`absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 lg:flex ${fade()}`} style={delayStyle(1400)}>
+        <span className="label text-steel">Scroll to explore</span>
+        <span className="relative h-10 w-[1.5px] overflow-hidden rounded bg-graphite/10">
+          <span className="absolute inset-x-0 top-0 h-1/2 bg-graphite animate-[scrollcue_2s_cubic-bezier(0.76,0,0.24,1)_infinite]" />
+        </span>
+      </div>
+      <style>{`@keyframes scrollcue { 0% { transform: translateY(-100%); } 100% { transform: translateY(200%); } }`}</style>
+    </section>
+  );
+}
+
+function Arrow() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M1 7H13M13 7L7.5 1.5M13 7L7.5 12.5" stroke="#fff" strokeWidth="1.6" />
+    </svg>
   );
 }

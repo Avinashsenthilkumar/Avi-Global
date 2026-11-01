@@ -1,40 +1,26 @@
 import Link from "next/link";
 
-export const metadata = {
-  title: "Page Not Found",
-};
+export const metadata = { title: "Page Not Found" };
 
 export default function NotFound() {
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6 pt-32 pb-24">
-      <div className="text-center max-w-lg">
-        <p className="text-xs tracking-widest2 uppercase text-gold mb-6">Error 404</p>
-        <h1 className="font-display font-medium uppercase text-4xl sm:text-5xl leading-[1.05] tracking-tight">
-          This page
-          <br />
-          doesn&apos;t exist.
-        </h1>
-        <p className="mt-6 text-sm md:text-base text-muted leading-relaxed">
-          The page you&apos;re looking for may have moved or never existed.
-          Let&apos;s get you back on track.
+    <section className="relative flex min-h-[80vh] items-center justify-center overflow-x-clip px-6 pt-32 pb-24">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ember/20 blur-[140px]" />
+      <div className="relative text-center">
+        <p className="font-display text-[9rem] md:text-[14rem] leading-none text-transparent [-webkit-text-stroke:1.5px_rgba(13,15,18,0.25)]">404</p>
+        <h1 className="mt-2 font-display text-3xl md:text-5xl uppercase">This page doesn&apos;t exist.</h1>
+        <p className="mx-auto mt-4 max-w-md text-[15px] text-steel">
+          The page you&apos;re looking for may have moved or never existed. Let&apos;s get you back on track.
         </p>
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/"
-            data-cursor-hover
-            className="inline-flex items-center rounded-full bg-gold-gradient px-8 py-3.5 text-xs tracking-widest2 uppercase text-ink font-medium"
-          >
-            Back to Home
+        <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
+          <Link href="/" data-cursor="hover" className="rounded-full bg-graphite px-8 py-4 text-[12px] uppercase tracking-[0.18em] text-white">
+            Back to home
           </Link>
-          <Link
-            href="/contact"
-            data-cursor-hover
-            className="inline-flex items-center rounded-full border border-gold/50 px-8 py-3.5 text-xs tracking-widest2 uppercase text-white hover:border-gold hover:text-gold transition-colors duration-300"
-          >
-            Contact Us
+          <Link href="/contact" data-cursor="hover" className="rounded-full border border-graphite/20 px-8 py-4 text-[12px] uppercase tracking-[0.18em]">
+            Contact us
           </Link>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

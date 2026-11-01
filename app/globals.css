@@ -2,169 +2,332 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
 :root {
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  --paper: #f1f2f4;
+  --graphite: #0d0f12;
+  --ember: #e85d10;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+  --tabbar-h: 0px;
 }
 
-* {
-  scrollbar-color: #F2661C #0a0a0a;
-}
-
-html {
-  scroll-behavior: smooth;
-  background-color: #050505;
-}
-
-body {
-  background-color: #050505;
-  color: #FFFFFF;
-  font-family: var(--font-body);
-  overflow-x: hidden;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@media (max-width: 767px) {
+  :root {
+    --tabbar-h: 64px;
   }
 }
 
-.font-display {
-  font-family: var(--font-display);
+html {
+  background: var(--paper);
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: none;
 }
 
-/* Only hide the native cursor once our JS cursor confirms it's running on a
-   fine-pointer device — if JS fails to load, the OS cursor stays visible. */
-/* Keyboard focus — visible for keyboard users, suppressed for mouse clicks.
-   The brief asks for proper focus states; without these the site is
-   effectively unnavigable by keyboard on a dark background. */
+body {
+  background: var(--paper);
+  color: var(--graphite);
+  font-family: var(--font-body), system-ui, sans-serif;
+  /* clip (not hidden) so position: sticky keeps working */
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  /* room for the mobile tab bar so it never covers content */
+  padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+}
+
+::selection {
+  background: var(--ember);
+  color: #fff;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------ */
+/* Accessibility                                                       */
+/* ------------------------------------------------------------------ */
+
 :focus-visible {
-  outline: 2px solid #F2661C;
+  outline: 2px solid var(--ember);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 :focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Screen-reader-only utility, used for the skip link */
-.sr-only-focusable {
+.skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
   z-index: 200;
 }
-.sr-only-focusable:focus {
+.skip-link:focus {
   left: 1rem;
   top: 1rem;
   padding: 0.75rem 1.25rem;
-  background: #F2661C;
-  color: #050505;
+  background: var(--graphite);
+  color: #fff;
   border-radius: 999px;
   font-size: 12px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
 
-.custom-cursor-active,
-.custom-cursor-active a,
-.custom-cursor-active button {
-  cursor: none;
-}
+/* ------------------------------------------------------------------ */
+/* Type helpers                                                        */
+/* ------------------------------------------------------------------ */
 
-/* Text inputs keep a real caret — hiding the cursor over a field people are
-   trying to type in makes the form feel broken. */
-.custom-cursor-active input,
-.custom-cursor-active textarea,
-.custom-cursor-active select,
-.custom-cursor-active [contenteditable="true"] {
-  cursor: auto;
-}
-
-/* Custom cursor — desktop only, two layers for a smooth weighted feel */
-.cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #FFFFFF;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0;
-  transform: translate3d(-50%, -50%, 0);
-  transition: opacity 0.3s ease;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(242, 102, 28, 0.9);
-  box-shadow: 0 0 18px rgba(242, 102, 28, 0.25);
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-.text-gradient-gold {
-  background: linear-gradient(135deg, #FFB562 0%, #F2661C 45%, #B3300C 100%);
+.text-ember-gradient {
+  background: linear-gradient(120deg, #ffaa4c 0%, #e85d10 52%, #b4320f 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-.gold-border-hover {
-  position: relative;
+.label {
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
 }
-.gold-border-hover::after {
+
+/* ------------------------------------------------------------------ */
+/* Cursor — difference blend so it reads dark on the light page and   */
+/* light on the graphite panels, with no extra logic.                  */
+/* ------------------------------------------------------------------ */
+
+.custom-cursor-active,
+.custom-cursor-active a,
+.custom-cursor-active button,
+.custom-cursor-active [role="button"] {
+  cursor: none;
+}
+.custom-cursor-active input,
+.custom-cursor-active textarea,
+.custom-cursor-active select {
+  cursor: auto;
+}
+
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: transform;
+  transition: opacity 0.3s ease;
+}
+.cursor-dot {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  mix-blend-mode: difference;
+  z-index: 9999;
+}
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--ember);
+  z-index: 9998;
+}
+.cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  will-change: transform;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reveal system (driven by lib/motion.js — adds .is-in when visible)  */
+/* ------------------------------------------------------------------ */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+[data-reveal="left"] {
+  transform: translate3d(-40px, 0, 0);
+}
+[data-reveal="scale"] {
+  transform: scale(0.94);
+}
+[data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Line-mask headline reveal */
+.rl-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+.rl-line > span {
+  display: block;
+  transform: translate3d(0, 110%, 0);
+  transition: transform 1.05s var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+.is-in .rl-line > span,
+.rl-line.is-in > span {
+  transform: none;
+}
+
+/* Word-by-word reveal */
+.rw-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.rw-word > span {
+  display: inline-block;
+  transform: translate3d(0, 105%, 0) rotate(4deg);
+  transform-origin: left bottom;
+  transition: transform 1s var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+.is-in .rw-word > span {
+  transform: none;
+}
+
+/* Image curtain reveal. The clip sits on the children, not the observed
+   element itself — IntersectionObserver never reports a target whose own
+   clip-path hides it completely, so clipping the wrapper meant it never
+   revealed. */
+[data-clip] > * {
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 1.2s var(--ease-inout);
+  transition-delay: var(--d, 0ms);
+}
+[data-clip].is-in > * {
+  clip-path: inset(0 0 0 0);
+}
+
+/* SVG stroke draw */
+[data-draw] path,
+[data-draw] circle,
+[data-draw] ellipse,
+[data-draw] line {
+  stroke-dasharray: var(--len, 1200);
+  stroke-dashoffset: var(--len, 1200);
+  transition: stroke-dashoffset 2.2s var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+[data-draw].is-in path,
+[data-draw].is-in circle,
+[data-draw].is-in ellipse,
+[data-draw].is-in line {
+  stroke-dashoffset: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Ambient                                                             */
+/* ------------------------------------------------------------------ */
+
+.grain::after {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  border: 1px solid transparent;
-  transition: border-color 0.4s cubic-bezier(0.22,1,0.36,1);
   pointer-events: none;
-}
-.gold-border-hover:hover::after {
-  border-color: rgba(212, 175, 55, 0.55);
-}
-
-.noise-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-::selection {
-  background: #F2661C;
-  color: #050505;
+.dot-grid {
+  background-image: radial-gradient(rgba(13, 15, 18, 0.12) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
-/* Marquee */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-marquee {
-  animation: marquee 32s linear infinite;
+@keyframes marquee-x {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
 }
 
-/* Hide scrollbars on drag-scroll galleries, keep them functional */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+.animate-float {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -173,17 +336,32 @@ body {
   display: none;
 }
 
-/* Slow ambient drift for background texture (hero mesh, ghost marks) */
-@keyframes drift {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(1.5%, -1.5%) rotate(2deg); }
-}
-.animate-drift {
-  animation: drift 22s ease-in-out infinite;
-}
+/* ------------------------------------------------------------------ */
+/* Reduced motion — everything is simply shown                         */
+/* ------------------------------------------------------------------ */
 
-.italic-serif {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  [data-reveal],
+  .rl-line > span,
+  .rw-word > span {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  [data-clip] > * {
+    clip-path: none !important;
+  }
+  [data-draw] path,
+  [data-draw] circle,
+  [data-draw] ellipse,
+  [data-draw] line {
+    stroke-dashoffset: 0 !important;
+  }
 }

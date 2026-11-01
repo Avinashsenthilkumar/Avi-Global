@@ -1,28 +1,35 @@
-import Reveal from "@/components/Reveal";
 import RevealText from "@/components/RevealText";
+import Reveal from "@/components/Reveal";
 
-export default function PageHero({ eyebrow, title, subtitle }) {
+// Shared hero for inner pages: oversized headline revealed word-by-word,
+// an index label, and a soft ember glow + dot grid for depth.
+export default function PageHero({ eyebrow, title, subtitle, index }) {
   return (
-    <section className="px-6 md:px-10 mx-auto max-w-5xl text-center">
-      {eyebrow && (
-        <Reveal>
-          <span className="block text-xs tracking-widest2 uppercase text-gold mb-6">
-            {eyebrow}
-          </span>
-        </Reveal>
-      )}
-      <RevealText
-        text={title}
-        as="h1"
-        className="font-display font-medium uppercase text-4xl sm:text-5xl md:text-6xl leading-[1.05] tracking-tight text-center"
+    <section className="relative isolate overflow-x-clip px-4 sm:px-6 md:px-10 pt-36 md:pt-48 pb-16 md:pb-24">
+      <div className="pointer-events-none absolute -right-40 -top-32 -z-10 h-[560px] w-[560px] rounded-full bg-ember/20 blur-[140px]" />
+      <div
+        className="dot-grid pointer-events-none absolute inset-0 -z-10 opacity-50"
+        style={{ maskImage: "radial-gradient(ellipse at 70% 30%, #000 10%, transparent 65%)", WebkitMaskImage: "radial-gradient(ellipse at 70% 30%, #000 10%, transparent 65%)" }}
       />
-      {subtitle && (
-        <Reveal delay={0.3}>
-          <p className="mt-8 text-sm md:text-base text-muted max-w-2xl mx-auto leading-relaxed">
-            {subtitle}
-          </p>
+      <div className="relative mx-auto max-w-7xl">
+        <Reveal className="mb-8 flex items-center gap-3">
+          {index && <span className="label text-steel">{index}</span>}
+          <span className="h-px w-10 bg-ember" />
+          {eyebrow && <span className="label text-ember">{eyebrow}</span>}
         </Reveal>
-      )}
+        <RevealText
+          as="h1"
+          mode="words"
+          stagger={0.07}
+          text={title}
+          className="max-w-5xl font-display font-medium uppercase leading-[0.95] tracking-[-0.02em] text-[2.8rem] sm:text-6xl md:text-7xl lg:text-[6.2rem]"
+        />
+        {subtitle && (
+          <Reveal delay={0.35} as="p" className="mt-8 max-w-xl text-[15px] md:text-lg leading-relaxed text-steel">
+            {subtitle}
+          </Reveal>
+        )}
+      </div>
     </section>
   );
 }

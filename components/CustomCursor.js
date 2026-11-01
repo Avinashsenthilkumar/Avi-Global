@@ -2,114 +2,113 @@
 
 import { useEffect, useRef } from "react";
 
-// Two-layer cursor: an inner dot that tracks the pointer exactly (no lag,
-// stays pin-sharp) and an outer ring that trails it with a critically-damped
-// lerp for a fluid, weighted feel. Both render as crisp SVG/CSS — no raster
-// images — so there's no blur at any zoom or pixel density. Desktop,
-// fine-pointer only; a no-op everywhere else.
+// Two-layer cursor, desktop only.
+//  • A dot that sits exactly on the pointer (difference-blended, so it is
+//    dark over the light page and light over graphite panels).
+//  • An ember ring that follows with spring-like easing and morphs by
+//    context: grows on links/buttons (data-cursor="hover"), and becomes a
+//    filled disc with a label over project cards (data-cursor="view").
+// All motion runs in one requestAnimationFrame loop with transforms only.
 
 export default function CustomCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
-  const raf = useRef(null);
+  const labelRef = useRef(null);
 
   useEffect(() => {
     const fine = window.matchMedia("(pointer: fine)").matches;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!fine) return;
-
-    document.body.classList.add("custom-cursor-active");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const dot = dotRef.current;
     const ring = ringRef.current;
-    if (!dot || !ring) return;
+    const label = labelRef.current;
+    document.body.classList.add("custom-cursor-active");
 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let ringX = mouseX;
-    let ringY = mouseY;
-    let ringScale = 1;
-    let targetScale = 1;
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    let scale = 1, targetScale = 1;
+    let fill = 0, targetFill = 0;
+    let visible = false;
+    let raf;
 
-    // Show immediately, centered, rather than waiting for the first
-    // mousemove — otherwise a static screenshot/first paint looks like
-    // nothing is there at all.
-    dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-    ring.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-    dot.style.opacity = "1";
-    ring.style.opacity = "1";
+    const show = (v) => {
+      visible = v;
+      dot.style.opacity = v ? "1" : "0";
+      ring.style.opacity = v ? "1" : "0";
+    };
 
-    const move = (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      dot.style.opacity = "1";
-      ring.style.opacity = "1";
-      dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+    const onMove = (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (!visible) {
+        rx = mx;
+        ry = my;
+        show(true);
+      }
     };
 
     const onOver = (e) => {
-      if (e.target.closest?.("[data-cursor-hover]")) targetScale = 2.1;
-    };
-    const onOut = (e) => {
-      if (e.target.closest?.("[data-cursor-hover]")) targetScale = 1;
-    };
-    const onLeaveWindow = () => {
-      dot.style.opacity = "0";
-      ring.style.opacity = "0";
-    };
-    const onEnterWindow = () => {
-      dot.style.opacity = "1";
-      ring.style.opacity = "1";
+      const t = e.target.closest?.("[data-cursor],[data-cursor-hover]");
+      if (!t) {
+        targetScale = 1;
+        targetFill = 0;
+        label.style.opacity = "0";
+        return;
+      }
+      const kind = t.getAttribute("data-cursor") || "hover";
+      if (kind === "view") {
+        targetScale = 2.4;
+        targetFill = 1;
+        label.textContent = t.getAttribute("data-cursor-label") || "View";
+        label.style.opacity = "1";
+      } else {
+        targetScale = 1.6;
+        targetFill = 0;
+        label.style.opacity = "0";
+      }
     };
 
-    window.addEventListener("mousemove", move, { passive: true });
+    const onDown = () => (targetScale *= 0.8);
+    const onUp = () => (targetScale /= 0.8);
+    const onLeave = () => show(false);
+
+    window.addEventListener("mousemove", onMove, { passive: true });
     document.addEventListener("mouseover", onOver);
-    document.addEventListener("mouseout", onOut);
-    document.addEventListener("mouseleave", onLeaveWindow);
-    document.addEventListener("mouseenter", onEnterWindow);
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("mouseup", onUp);
+    document.documentElement.addEventListener("mouseleave", onLeave);
 
-    if (reduced) {
-      // Keep the ring static under the dot rather than animating it.
-      ring.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-      const staticSync = (e) => {
-        ring.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
-      };
-      window.addEventListener("mousemove", staticSync, { passive: true });
-      return () => {
-        window.removeEventListener("mousemove", move);
-        window.removeEventListener("mousemove", staticSync);
-        document.removeEventListener("mouseover", onOver);
-        document.removeEventListener("mouseout", onOut);
-        document.removeEventListener("mouseleave", onLeaveWindow);
-        document.removeEventListener("mouseenter", onEnterWindow);
-      };
-    }
-
+    const k = reduced ? 1 : 0.18;
     const tick = () => {
-      // Critically-damped lerp — frame-rate independent enough at 60/120hz
-      // to read as smooth weighted momentum rather than a stepped chase.
-      ringX += (mouseX - ringX) * 0.18;
-      ringY += (mouseY - ringY) * 0.18;
-      ringScale += (targetScale - ringScale) * 0.22;
-      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${ringScale})`;
-      raf.current = requestAnimationFrame(tick);
+      rx += (mx - rx) * k;
+      ry += (my - ry) * k;
+      scale += (targetScale - scale) * 0.18;
+      fill += (targetFill - fill) * 0.18;
+
+      dot.style.transform = `translate3d(${mx - 4}px, ${my - 4}px, 0) scale(${1 - fill})`;
+      ring.style.transform = `translate3d(${rx - 20}px, ${ry - 20}px, 0) scale(${scale})`;
+      ring.style.backgroundColor = `rgba(232, 93, 16, ${fill * 0.92})`;
+      label.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
+      raf = requestAnimationFrame(tick);
     };
-    raf.current = requestAnimationFrame(tick);
+    raf = requestAnimationFrame(tick);
 
     return () => {
-      cancelAnimationFrame(raf.current);
-      window.removeEventListener("mousemove", move);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
       document.removeEventListener("mouseover", onOver);
-      document.removeEventListener("mouseout", onOut);
-      document.removeEventListener("mouseleave", onLeaveWindow);
-      document.removeEventListener("mouseenter", onEnterWindow);
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("mouseup", onUp);
+      document.documentElement.removeEventListener("mouseleave", onLeave);
+      document.body.classList.remove("custom-cursor-active");
     };
   }, []);
 
   return (
     <>
-      <div ref={dotRef} className="cursor-dot" aria-hidden="true" />
-      <div ref={ringRef} className="cursor-ring" aria-hidden="true" />
+      <div ref={ringRef} className="cursor-ring hidden md:block" aria-hidden="true" />
+      <div ref={dotRef} className="cursor-dot hidden md:block" aria-hidden="true" />
+      <div ref={labelRef} className="cursor-label hidden md:block" aria-hidden="true" />
     </>
   );
 }

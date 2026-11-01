@@ -96,31 +96,54 @@ const PHOTOS = {
   "aara-fashions": "/images/projects/aara-fashions.webp",
 };
 
-export default function ProjectThumb({ slug, name, className = "" }) {
+export default function ProjectThumb({ slug, name, className = "", zoom = true }) {
   const photo = PHOTOS[slug];
 
   if (photo) {
     return (
-      <div className={`overflow-hidden bg-ink-softer ${className}`}>
+      <div className={`overflow-hidden bg-paper-3 ${className}`}>
         <img
           src={photo}
           alt={name ? `${name} project` : ""}
           loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] ease-out ${
+            zoom ? "group-hover:scale-[1.06]" : ""
+          }`}
         />
-        {/* Keeps the card legible and on-palette against the dark UI */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-graphite/50 via-transparent to-transparent" />
       </div>
     );
   }
 
+  // Generated tile: graphite panel, ember line illustration of the
+  // business, and the project initial as a large ghost letter.
   const illustration = ILLUSTRATIONS[slug] || FALLBACK;
+  const initial = (name || "?").trim().charAt(0).toUpperCase();
   return (
-    <div className={`overflow-hidden bg-ink-softer flex items-center justify-center ${className}`}>
-      <div className="absolute inset-0 bg-radial-glow opacity-90" />
+    <div className={`overflow-hidden bg-graphite flex items-center justify-center ${className}`}>
+      <div
+        className="absolute inset-0"
+        style={{ background: "radial-gradient(circle at 50% 45%, rgba(232,93,16,0.28), transparent 60%)" }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.15]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+          backgroundSize: "36px 36px",
+        }}
+      />
+      <span
+        aria-hidden="true"
+        className="absolute -bottom-[0.18em] -right-[0.05em] font-display text-[11rem] leading-none text-white/[0.05] select-none"
+      >
+        {initial}
+      </span>
       <svg
         viewBox="0 0 64 64"
-        className="relative z-10 h-2/5 w-2/5 max-h-32 max-w-32 text-gold"
+        className={`relative z-10 h-[38%] w-[38%] max-h-36 max-w-36 text-ember-light transition-transform duration-700 ease-out ${
+          zoom ? "group-hover:scale-110 group-hover:-rotate-3" : ""
+        }`}
         aria-hidden="true"
       >
         {illustration}

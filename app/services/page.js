@@ -1,6 +1,7 @@
-import Reveal from "@/components/Reveal";
 import PageHero from "@/components/PageHero";
+import Reveal from "@/components/Reveal";
 import FinalCTA from "@/components/FinalCTA";
+import Marquee from "@/components/Marquee";
 import { servicesDetailed } from "@/lib/services";
 
 export const metadata = {
@@ -12,34 +13,46 @@ export const metadata = {
 
 export default function ServicesPage() {
   return (
-    <div className="pt-32 md:pt-40 pb-24">
-      <PageHero title={"COMPLETE DIGITAL\nSOLUTIONS. ONE PARTNER."} />
+    <>
+      <PageHero
+        index="03"
+        eyebrow="Services"
+        title={"Complete digital solutions. *One partner.*"}
+        subtitle="Ten disciplines, one team. Everything you need to take a product from first idea to a running, supported business tool."
+      />
 
-      <section className="mt-24 px-6 md:px-10 mx-auto max-w-6xl">
-        <div className="grid md:grid-cols-2 gap-8">
+      <Marquee tone="light" items={servicesDetailed.slice(0, 6).map((s) => s.title)} />
+
+      <section className="px-4 sm:px-6 md:px-10 py-16 md:py-28">
+        <div className="mx-auto max-w-7xl border-t border-graphite/15">
           {servicesDetailed.map((service, i) => (
-            <Reveal key={service.title} delay={(i % 2) * 0.08}>
-              <div className="rounded-2xl border border-white/10 bg-ink-soft/40 p-8 h-full gold-border-hover">
-                <h2 className="font-display font-medium uppercase text-xl md:text-2xl tracking-tight">
-                  {service.title}
-                </h2>
-                <ul className="mt-5 space-y-2.5">
-                  {service.items.map((item) => (
-                    <li key={item} className="flex items-start gap-3 text-sm text-muted">
-                      <span className="mt-1.5 h-1 w-1 rounded-full bg-gold shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <Reveal key={service.title} delay={0.04 * (i % 3)}>
+              <article data-cursor="hover" className="group relative overflow-hidden border-b border-graphite/15">
+                {/* Graphite fill sweeps in from the left on hover */}
+                <div className="absolute inset-0 origin-left scale-x-0 bg-graphite transition-transform duration-700 ease-out group-hover:scale-x-100" />
+                <div className="relative grid gap-5 px-2 py-10 md:grid-cols-12 md:items-center md:gap-8 md:px-8 md:py-12 transition-colors duration-500 group-hover:text-white">
+                  <span className="md:col-span-1 font-display text-sm text-ember">{String(i + 1).padStart(2, "0")}</span>
+                  <h2 className="md:col-span-5 font-display text-3xl md:text-[2.6rem] uppercase leading-none tracking-[-0.01em]">
+                    {service.title}
+                  </h2>
+                  <ul className="md:col-span-6 flex flex-wrap gap-2">
+                    {service.items.map((item) => (
+                      <li
+                        key={item}
+                        className="rounded-full border border-graphite/15 bg-white/70 px-3.5 py-1.5 text-[13px] text-graphite transition-colors duration-500 group-hover:border-white/15 group-hover:bg-white/[0.06] group-hover:text-white/85"
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <div className="mt-24 md:mt-32">
-        <FinalCTA />
-      </div>
-    </div>
+      <FinalCTA />
+    </>
   );
 }
