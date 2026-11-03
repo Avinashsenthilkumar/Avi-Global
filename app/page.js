@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VideoIntro from "@/components/VideoIntro";
 import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
@@ -15,6 +15,7 @@ import GlobalVision from "@/components/GlobalVision";
 import FinalCTA from "@/components/FinalCTA";
 import { homeServices, whyUs, processSteps } from "@/lib/services";
 import { projects } from "@/lib/projects";
+import { siteConfig } from "@/lib/config";
 
 const CAPABILITIES = [
   { title: "Web Development", icon: <path d="M4 6h24v16H4zM4 26h24M12 18l-3-3 3-3M20 12l3 3-3 3" /> },
@@ -26,9 +27,17 @@ const CAPABILITIES = [
 export default function HomePage() {
   const [revealed, setRevealed] = useState(false);
 
+  // With the intro switched off, start the hero entrance on the next frame
+  // so its animation still plays.
+  useEffect(() => {
+    if (siteConfig.showIntro) return;
+    const id = requestAnimationFrame(() => setRevealed(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   return (
     <>
-      <VideoIntro onComplete={() => setRevealed(true)} />
+      {siteConfig.showIntro && <VideoIntro onComplete={() => setRevealed(true)} />}
       <Hero revealed={revealed} />
 
       <Marquee items={homeServices.map((s) => s.title)} />
