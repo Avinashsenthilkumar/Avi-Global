@@ -21,6 +21,7 @@ const nextConfig = {
       { source: "/images/character/:path*", headers: immutable },
       { source: "/images/projects/:path*", headers: week },
       { source: "/videos/:path*", headers: week },
+      { source: "/brand/:path*", headers: week },
       { source: "/:file(logo.png|logo-compact.png|favicon-mark.png|icon-192.png|icon-512.png)", headers: week },
     ];
   },

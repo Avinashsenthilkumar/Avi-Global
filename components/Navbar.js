@@ -54,14 +54,14 @@ export default function Navbar() {
         }`}
       >
         <div
-          className={`mx-auto flex h-16 md:h-[72px] max-w-7xl items-center justify-between rounded-full pl-3 pr-2 md:pl-5 transition-all duration-500 ease-out ${
+          className={`mx-auto flex h-[66px] md:h-[84px] max-w-7xl items-center justify-between rounded-full pl-3 pr-2 md:pl-5 transition-all duration-500 ease-out ${
             scrolled || open
               ? "bg-white/85 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(13,15,18,0.18)] border border-white/60"
               : "bg-transparent border border-transparent"
           }`}
         >
           <Link href="/" aria-label={`${siteConfig.name} home`} data-cursor="hover" className="flex items-center">
-            <Logo variant="compact" priority height={52} className="h-11 md:h-[52px] w-auto" />
+            <Logo variant="compact" priority height={64} className="h-[50px] md:h-16 w-auto" />
           </Link>
 
           <nav aria-label="Primary" className="hidden lg:flex items-center gap-1 rounded-full p-1">

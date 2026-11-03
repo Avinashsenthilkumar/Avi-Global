@@ -20,7 +20,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-12">
           <div className="col-span-2 md:col-span-4">
-            <Logo variant="compact" height={96} className="h-24 w-auto" />
+            <Logo variant="compact" height={144} className="h-28 md:h-36 w-auto" />
             <p className="label mt-6 text-steel">{siteConfig.tagline}</p>
           </div>
 
@@ -77,10 +77,32 @@ export default function Footer() {
         </div>
 
         {/* Oversized outline wordmark */}
-        <div aria-hidden="true" className="mt-20 select-none overflow-hidden">
-          <p className="font-display text-[15.5vw] md:text-[15vw] uppercase leading-[0.8] tracking-[-0.03em] text-transparent [-webkit-text-stroke:1px_rgba(13,15,18,0.14)] whitespace-nowrap">
-            Avi Global
-          </p>
+        {/* Oversized outline wordmark — an SVG so it always fits the
+            container exactly, on any screen width, instead of being cut off. */}
+        <div aria-hidden="true" className="mt-16 md:mt-20 select-none">
+          <svg viewBox="0 0 1000 150" className="block h-auto w-full" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="footer-wordmark" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stopColor="#0D0F12" stopOpacity="0.28" />
+                <stop offset="0.55" stopColor="#B4320F" stopOpacity="0.45" />
+                <stop offset="1" stopColor="#E85D10" stopOpacity="0.55" />
+              </linearGradient>
+            </defs>
+            <text
+              x="500"
+              y="128"
+              textAnchor="middle"
+              textLength="996"
+              lengthAdjust="spacingAndGlyphs"
+              fill="none"
+              stroke="url(#footer-wordmark)"
+              strokeWidth="1.1"
+              className="font-display uppercase"
+              style={{ fontSize: 172, letterSpacing: "-0.02em" }}
+            >
+              AVI GLOBAL
+            </text>
+          </svg>
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-graphite/10 pt-6 text-xs text-steel md:flex-row">

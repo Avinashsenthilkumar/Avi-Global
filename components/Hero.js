@@ -32,7 +32,7 @@ export default function Hero({ revealed }) {
   return (
     <section
       ref={sectionRef}
-      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-28 md:pt-32 lg:pt-28 pb-14 md:pb-20 lg:pb-16 lg:min-h-[100svh] lg:flex lg:items-center"
+      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-28 md:pt-32 lg:pt-32 pb-14 md:pb-20 lg:pb-16 lg:min-h-[100svh] lg:flex lg:items-center"
     >
       {/* Ambient light + dot grid */}
       <div className="pointer-events-none absolute -left-40 -top-40 h-[620px] w-[620px] glow scale-[1.7] [--glow-a:0.2]" />
@@ -105,7 +105,7 @@ export default function Hero({ revealed }) {
         </div>
 
         {/* Stage */}
-        <div ref={stageWrapRef} className="lg:col-span-5 h-[64svh] min-h-[440px] max-h-[780px] lg:h-[calc(100svh-9rem)] lg:min-h-[520px] will-change-transform">
+        <div ref={stageWrapRef} className="lg:col-span-5 h-[64svh] min-h-[440px] max-h-[780px] lg:h-[calc(100svh-10rem)] lg:min-h-[520px] will-change-transform">
           <HeroStage revealed={revealed} />
         </div>
       </div>
