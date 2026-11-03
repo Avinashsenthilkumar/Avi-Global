@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 export default function PageHero({ eyebrow, title, subtitle, index }) {
   return (
     <section className="relative isolate overflow-x-clip px-4 sm:px-6 md:px-10 pt-36 md:pt-48 pb-16 md:pb-24">
-      <div className="pointer-events-none absolute -right-40 -top-32 -z-10 h-[560px] w-[560px] rounded-full bg-ember/20 blur-[140px]" />
+      <div className="pointer-events-none absolute -right-40 -top-32 -z-10 h-[560px] w-[560px] glow scale-[1.7] [--glow-a:0.2]" />
       <div
         className="dot-grid pointer-events-none absolute inset-0 -z-10 opacity-50"
         style={{ maskImage: "radial-gradient(ellipse at 70% 30%, #000 10%, transparent 65%)", WebkitMaskImage: "radial-gradient(ellipse at 70% 30%, #000 10%, transparent 65%)" }}

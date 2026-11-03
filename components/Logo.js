@@ -16,8 +16,12 @@ const SOURCES = {
   mark: { src: "/favicon-mark.png", width: 565, height: 565 },
 };
 
-export default function Logo({ className = "h-8 w-auto", variant = "compact", priority = false }) {
-  const { src, width, height } = SOURCES[variant] || SOURCES.compact;
+// `height` is the largest CSS height the logo is shown at. next/image then
+// builds its 1x/2x sources from that, instead of from the 768–1024px
+// originals — the navbar mark downloads ~110px-tall images, not 1500px ones.
+export default function Logo({ className = "h-8 w-auto", variant = "compact", priority = false, height = 64 }) {
+  const { src, width: w0, height: h0 } = SOURCES[variant] || SOURCES.compact;
+  const width = Math.round((w0 / h0) * height);
   return (
     <Image
       src={src}

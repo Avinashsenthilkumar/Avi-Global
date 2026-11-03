@@ -75,8 +75,9 @@ Or any Node host that supports Next.js (`npm run build && npm start`).
   self-drawing globe (`GlobalVision`).
 - **Mobile**: bottom tab bar (`MobileTabBar`), swipe carousels, installable
   as an app via `app/manifest.js`, safe-area aware.
-- **Character frames**: `public/images/mascot/desktop` (full resolution) and
-  `/mobile` (phone weight), 60 frames each.
+- **Character frames**: `public/images/character/desktop` (60 frames, 720px) and
+  `/mobile` (30 frames, 480px), drawn to one canvas and loaded progressively
+  (front-facing frame first, the rest after the page has loaded).
 
 ## Notes
 

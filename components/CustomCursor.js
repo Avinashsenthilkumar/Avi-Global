@@ -8,7 +8,9 @@ import { useEffect, useRef } from "react";
 //  • An ember ring that follows with spring-like easing and morphs by
 //    context: grows on links/buttons (data-cursor="hover"), and becomes a
 //    filled disc with a label over project cards (data-cursor="view").
-// All motion runs in one requestAnimationFrame loop with transforms only.
+// All motion runs in one requestAnimationFrame loop with transforms only,
+// and the loop sleeps the moment the ring settles, so an idle mouse costs
+// nothing.
 
 export default function CustomCursor() {
   const dotRef = useRef(null);
@@ -29,7 +31,13 @@ export default function CustomCursor() {
     let scale = 1, targetScale = 1;
     let fill = 0, targetFill = 0;
     let visible = false;
-    let raf;
+    let raf = 0;
+    let running = false;
+    const wake = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(tick);
+    };
 
     const show = (v) => {
       visible = v;
@@ -45,6 +53,7 @@ export default function CustomCursor() {
         ry = my;
         show(true);
       }
+      wake();
     };
 
     const onOver = (e) => {
@@ -53,6 +62,7 @@ export default function CustomCursor() {
         targetScale = 1;
         targetFill = 0;
         label.style.opacity = "0";
+        wake();
         return;
       }
       const kind = t.getAttribute("data-cursor") || "hover";
@@ -66,10 +76,17 @@ export default function CustomCursor() {
         targetFill = 0;
         label.style.opacity = "0";
       }
+      wake();
     };
 
-    const onDown = () => (targetScale *= 0.8);
-    const onUp = () => (targetScale /= 0.8);
+    const onDown = () => {
+      targetScale *= 0.8;
+      wake();
+    };
+    const onUp = () => {
+      targetScale /= 0.8;
+      wake();
+    };
     const onLeave = () => show(false);
 
     window.addEventListener("mousemove", onMove, { passive: true });
@@ -79,7 +96,7 @@ export default function CustomCursor() {
     document.documentElement.addEventListener("mouseleave", onLeave);
 
     const k = reduced ? 1 : 0.18;
-    const tick = () => {
+    function tick() {
       rx += (mx - rx) * k;
       ry += (my - ry) * k;
       scale += (targetScale - scale) * 0.18;
@@ -89,9 +106,17 @@ export default function CustomCursor() {
       ring.style.transform = `translate3d(${rx - 20}px, ${ry - 20}px, 0) scale(${scale})`;
       ring.style.backgroundColor = `rgba(232, 93, 16, ${fill * 0.92})`;
       label.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%)`;
+      const settled =
+        Math.abs(mx - rx) < 0.1 &&
+        Math.abs(my - ry) < 0.1 &&
+        Math.abs(targetScale - scale) < 0.002 &&
+        Math.abs(targetFill - fill) < 0.002;
+      if (settled) {
+        running = false;
+        return;
+      }
       raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
+    }
 
     return () => {
       cancelAnimationFrame(raf);

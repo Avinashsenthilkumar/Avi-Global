@@ -1,4 +1,4 @@
-import { Fraunces, Manrope } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -12,19 +12,25 @@ import MotionObserver from "@/components/MotionObserver";
 import MobileTabBar from "@/components/MobileTabBar";
 import { siteConfig } from "@/lib/config";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
+// Fonts ship with the site (app/fonts, SIL Open Font License) instead of
+// being fetched from Google at build time — so they always render, even on
+// a slow or offline build machine, and there's no third-party request.
+// Subset to Latin + ₹ and the weights the site uses.
+const fraunces = localFont({
+  src: [
+    { path: "./fonts/fraunces-var.woff", weight: "300 600", style: "normal" },
+    { path: "./fonts/fraunces-italic-var.woff", weight: "300 600", style: "italic" },
+  ],
   variable: "--font-display",
   display: "swap",
+  fallback: ["Georgia", "serif"],
 });
 
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+const manrope = localFont({
+  src: [{ path: "./fonts/manrope-var.woff", weight: "300 700", style: "normal" }],
   variable: "--font-body",
   display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const metadata = {

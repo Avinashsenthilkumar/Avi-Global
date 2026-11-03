@@ -18,13 +18,13 @@ export default function Footer() {
   return (
     <footer className="relative overflow-hidden bg-paper px-4 sm:px-6 md:px-10 pt-20 pb-8">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 md:grid-cols-12">
-          <div className="md:col-span-4">
-            <Logo variant="compact" className="h-24 w-auto" />
+        <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-12">
+          <div className="col-span-2 md:col-span-4">
+            <Logo variant="compact" height={96} className="h-24 w-auto" />
             <p className="label mt-6 text-steel">{siteConfig.tagline}</p>
           </div>
 
-          <div className="md:col-span-2">
+          <div className="col-span-1 md:col-span-2">
             <h3 className="label mb-5 text-ember">Navigate</h3>
             <ul className="space-y-3 text-[15px]">
               {navLinks.map((l) => (
@@ -37,7 +37,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-1 md:col-span-3">
             <h3 className="label mb-5 text-ember">Services</h3>
             <ul className="space-y-3 text-[15px] text-graphite/75">
               {services.map((s) => (
@@ -50,7 +50,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div className="md:col-span-3">
+          <div className="col-span-2 md:col-span-3">
             <h3 className="label mb-5 text-ember">Contact</h3>
             <ul className="space-y-3 text-[15px] text-graphite/75">
               <li>
@@ -78,7 +78,7 @@ export default function Footer() {
 
         {/* Oversized outline wordmark */}
         <div aria-hidden="true" className="mt-20 select-none overflow-hidden">
-          <p className="font-display text-[19vw] md:text-[15vw] uppercase leading-[0.8] tracking-[-0.03em] text-transparent [-webkit-text-stroke:1px_rgba(13,15,18,0.14)] whitespace-nowrap">
+          <p className="font-display text-[15.5vw] md:text-[15vw] uppercase leading-[0.8] tracking-[-0.03em] text-transparent [-webkit-text-stroke:1px_rgba(13,15,18,0.14)] whitespace-nowrap">
             Avi Global
           </p>
         </div>

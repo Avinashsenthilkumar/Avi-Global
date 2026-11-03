@@ -108,7 +108,7 @@ export default function ProjectsShowcase({ projects }) {
             >
               <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem]" data-clip="" style={{ "--d": `${i * 90}ms` }}>
                 <ProjectThumb slug={p.slug} name={p.name} className="absolute inset-0 h-full w-full" />
-                <span className="absolute left-5 top-5 rounded-full bg-white/90 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-graphite backdrop-blur">
+                <span className="absolute left-5 top-5 rounded-full bg-white/95 px-3 py-1.5 text-[10px] uppercase tracking-[0.18em] text-graphite">
                   {String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
                 </span>
               </div>

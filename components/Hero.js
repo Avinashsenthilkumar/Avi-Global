@@ -32,17 +32,17 @@ export default function Hero({ revealed }) {
   return (
     <section
       ref={sectionRef}
-      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-28 md:pt-32 pb-14 md:pb-20 lg:min-h-[100svh]"
+      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-28 md:pt-32 lg:pt-28 pb-14 md:pb-20 lg:pb-16 lg:min-h-[100svh] lg:flex lg:items-center"
     >
       {/* Ambient light + dot grid */}
-      <div className="pointer-events-none absolute -left-40 -top-40 h-[620px] w-[620px] rounded-full bg-ember/20 blur-[140px]" />
-      <div className="pointer-events-none absolute right-[-10%] bottom-[-20%] h-[520px] w-[520px] rounded-full bg-[#9AA3B2]/30 blur-[140px]" />
+      <div className="pointer-events-none absolute -left-40 -top-40 h-[620px] w-[620px] glow scale-[1.7] [--glow-a:0.2]" />
+      <div className="pointer-events-none absolute right-[-10%] bottom-[-20%] h-[520px] w-[520px] glow scale-[1.7] [--glow:154_163_178] [--glow-a:0.3]" />
       <div
         className="dot-grid pointer-events-none absolute inset-0 opacity-60"
         style={{ maskImage: "radial-gradient(ellipse at 30% 40%, #000 10%, transparent 70%)", WebkitMaskImage: "radial-gradient(ellipse at 30% 40%, #000 10%, transparent 70%)" }}
       />
 
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-8">
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-8">
         {/* Copy */}
         <div ref={textRef} className={`lg:col-span-7 ${revealed ? "is-in" : ""}`}>
           <div className={`mb-7 flex items-center gap-3 ${fade()}`} style={delayStyle(100)}>
@@ -59,18 +59,18 @@ export default function Hero({ revealed }) {
             delay={0.25}
             stagger={0.11}
             text={"We build\n*digital solutions*\nthat move\nbusiness forward."}
-            className="font-display font-medium uppercase leading-[0.95] tracking-[-0.02em] text-[2.9rem] sm:text-6xl md:text-7xl xl:text-[5.6rem]"
+            className="font-display font-medium uppercase leading-[0.95] tracking-[-0.02em] text-[2.9rem] sm:text-6xl md:text-7xl lg:text-[4.6rem] xl:text-[5.1rem] 2xl:text-[5.6rem]"
           />
 
           <p
-            className={`mt-8 max-w-[34rem] text-[15px] md:text-[17px] leading-relaxed text-steel ${fade()}`}
+            className={`mt-7 max-w-[34rem] text-[15px] md:text-[17px] leading-relaxed text-steel ${fade()}`}
             style={delayStyle(850)}
           >
             From powerful websites and e-commerce platforms to custom web applications and mobile apps,
             AVI GLOBAL SOLUTIONS delivers end-to-end digital solutions built for modern businesses.
           </p>
 
-          <div className={`mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 ${fade()}`} style={delayStyle(1000)}>
+          <div className={`mt-9 flex flex-col sm:flex-row gap-3 sm:gap-4 ${fade()}`} style={delayStyle(1000)}>
             <MagneticButton>
               <Link
                 href="/contact"
@@ -87,14 +87,14 @@ export default function Hero({ revealed }) {
               <Link
                 href="/projects"
                 data-cursor="hover"
-                className="inline-flex w-full sm:w-auto items-center justify-center rounded-full border border-graphite/20 bg-white/60 px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-graphite backdrop-blur transition-colors duration-300 hover:border-graphite"
+                className="inline-flex w-full sm:w-auto items-center justify-center rounded-full border border-graphite/20 bg-white/80 px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-graphite transition-colors duration-300 hover:border-graphite"
               >
                 Explore Our Work
               </Link>
             </MagneticButton>
           </div>
 
-          <div className={`mt-12 hidden md:flex items-center gap-6 text-[12px] text-steel ${fade()}`} style={delayStyle(1150)}>
+          <div className={`mt-10 hidden md:flex items-center gap-6 text-[12px] text-steel ${fade()}`} style={delayStyle(1150)}>
             {siteConfig.regions.map((r, i) => (
               <span key={r} className="flex items-center gap-6">
                 {i > 0 && <span className="h-3 w-px bg-graphite/20" />}
@@ -105,7 +105,7 @@ export default function Hero({ revealed }) {
         </div>
 
         {/* Stage */}
-        <div ref={stageWrapRef} className="lg:col-span-5 h-[64svh] min-h-[440px] max-h-[760px] lg:h-[78svh] will-change-transform">
+        <div ref={stageWrapRef} className="lg:col-span-5 h-[64svh] min-h-[440px] max-h-[780px] lg:h-[calc(100svh-9rem)] lg:min-h-[520px] will-change-transform">
           <HeroStage revealed={revealed} />
         </div>
       </div>

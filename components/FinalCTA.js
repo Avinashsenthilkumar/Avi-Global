@@ -9,7 +9,7 @@ export default function FinalCTA() {
   return (
     <section className="px-3 sm:px-5 py-6 md:py-10">
       <div className="grain relative mx-auto max-w-[1400px] overflow-hidden rounded-[2rem] md:rounded-[3rem] bg-graphite px-6 py-20 text-white sm:px-10 md:px-16 md:py-28">
-        <div className="pointer-events-none absolute left-1/2 top-full h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-ember/40 blur-[160px]" />
+        <div className="pointer-events-none absolute left-1/2 top-full h-[700px] w-[900px] -translate-x-1/2 -translate-y-1/2 glow scale-[1.7] [--glow-a:0.4]" />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_auto]">
           <div>
             <Reveal className="mb-6 flex items-center gap-3">

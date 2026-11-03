@@ -2,156 +2,225 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// 60-frame head-turn sequence cut from the supplied character video.
+// Head-turn sequence cut from the supplied character video, drawn to a
+// single <canvas>. Built for speed:
 //
-// Desktop: the frame index tracks the cursor's horizontal position, eased
-// with a lerp so it reads as a continuous turn rather than a frame-snap.
-// Touch: there is no cursor, so the figure follows the device's tilt where
-// the browser exposes orientation, and otherwise plays a slow idle
-// look-around — either way it is never inert.
-//
-// Two frame sets are shipped: full-resolution for desktop, and a ~1/3-scale
-// set for phones so mobile users aren't made to download several megabytes
-// of hero art. The set is chosen once on mount from the viewport width.
+//  • One drawing surface instead of 60 stacked <img> layers — the browser
+//    composites one layer, and we only redraw when the frame changes.
+//  • Progressive loading: the front-facing frame loads first at high
+//    priority and is drawn the moment it arrives. The rest stream in after
+//    the page has finished loading, nearest-to-centre first, so the frames
+//    you're most likely to need next are always ready first. Until a frame
+//    arrives, the nearest loaded one is shown — never a blank.
+//  • The animation loop sleeps: it stops once the head has settled on the
+//    cursor, when the hero is scrolled out of view, and when the tab is
+//    hidden. Moving the mouse wakes it.
+//  • Phones get a lighter 30-frame set (tilt / idle sweep doesn't need 60).
 
-const FRAME_COUNT = 60;
-const srcSet = (dir) =>
-  Array.from(
-    { length: FRAME_COUNT },
-    (_, i) => `/images/mascot/${dir}/frame-${String(i + 1).padStart(2, "0")}.webp`
-  );
-
-const DESKTOP_SRCS = srcSet("desktop");
-const MOBILE_SRCS = srcSet("mobile");
+const SETS = {
+  desktop: { dir: "/images/character/desktop", count: 60 },
+  mobile: { dir: "/images/character/mobile", count: 30 },
+};
+const src = (set, i) => `${set.dir}/f${String(i + 1).padStart(2, "0")}.webp`;
 
 export default function HeroCharacter({ className = "" }) {
-  const imgRefs = useRef([]);
-  const [srcs, setSrcs] = useState(null);
+  const wrapRef = useRef(null);
+  const canvasRef = useRef(null);
   const [failed, setFailed] = useState(false);
 
-  // Pick the frame set before painting anything, so we never load both.
   useEffect(() => {
-    const isSmall = window.matchMedia("(max-width: 767px)").matches;
-    setSrcs(isSmall ? MOBILE_SRCS : DESKTOP_SRCS);
-  }, []);
+    const wrap = wrapRef.current;
+    const canvas = canvasRef.current;
+    if (!wrap || !canvas) return;
+    const ctx = canvas.getContext("2d");
 
-  useEffect(() => {
-    if (!srcs) return;
-
-    let rafId = null;
-    let cleanup = () => {};
-
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const small = window.matchMedia("(max-width: 767px)").matches;
     const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const set = small ? SETS.mobile : SETS.desktop;
+    const N = set.count;
+    const mid = Math.floor((N - 1) / 2);
 
-    let current = (FRAME_COUNT - 1) / 2;
-    let target = current;
-    let lastActive = -1;
+    const frames = new Array(N).fill(null);
+    let current = mid;
+    let target = mid;
+    let drawn = -1;
+    let raf = 0;
+    let running = false;
+    let visible = true;
+    let inView = true;
+    let disposed = false;
+    let tiltActive = false;
+    const t0 = performance.now();
 
-    const setActive = (v) => {
-      const idx = Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(v)));
-      if (idx === lastActive) return;
-      const imgs = imgRefs.current;
-      if (imgs[lastActive]) imgs[lastActive].style.opacity = "0";
-      if (imgs[idx]) imgs[idx].style.opacity = "1";
-      lastActive = idx;
+    // ---- drawing -------------------------------------------------------
+    const nearestLoaded = (i) => {
+      for (let d = 0; d < N; d++) {
+        if (frames[i - d]) return i - d;
+        if (frames[i + d]) return i + d;
+      }
+      return -1;
     };
 
-    setActive(current);
+    const draw = (force = false) => {
+      const want = Math.max(0, Math.min(N - 1, Math.round(current)));
+      const idx = nearestLoaded(want);
+      if (idx < 0 || (idx === drawn && !force)) return;
+      const img = frames[idx];
+      const cw = canvas.width, ch = canvas.height;
+      // object-fit: contain, anchored to the bottom (feet on the floor)
+      const s = Math.min(cw / img.naturalWidth, ch / img.naturalHeight);
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.drawImage(img, (cw - w) / 2, ch - h, w, h);
+      drawn = idx;
+    };
 
-    // Surface a missing-asset problem instead of rendering an empty box.
-    const probe = new Image();
-    probe.onerror = () => setFailed(true);
-    probe.src = srcs[0];
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const r = wrap.getBoundingClientRect();
+      const w = Math.max(1, Math.round(r.width * dpr));
+      const h = Math.max(1, Math.round(r.height * dpr));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        ctx.imageSmoothingQuality = "high";
+        draw(true);
+      }
+    };
 
-    // Warm the cache so frame swaps never flash an undecoded image.
-    srcs.forEach((s) => {
-      const im = new Image();
-      im.src = s;
-      if (im.decode) im.decode().catch(() => {});
+    // ---- loop (sleeps whenever there's nothing to do) -------------------
+    const tick = (now) => {
+      if (!coarse) {
+        current += (target - current) * 0.14;
+        if (Math.abs(target - current) < 0.02) current = target;
+      } else {
+        if (!tiltActive) {
+          const wave = Math.sin(((now - t0) / 1000) * 0.4);
+          target = ((wave + 1) / 2) * (N - 1);
+        }
+        current += (target - current) * (tiltActive ? 0.12 : 0.06);
+      }
+      draw();
+      const settled = !coarse && current === target;
+      if (!visible || settled || disposed) {
+        running = false;
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    const wake = () => {
+      if (running || reduced || !visible || disposed) return;
+      running = true;
+      raf = requestAnimationFrame(tick);
+    };
+
+    // ---- loading --------------------------------------------------------
+    const load = (i, priority = "low") =>
+      new Promise((resolve) => {
+        const img = new Image();
+        img.decoding = "async";
+        img.fetchPriority = priority;
+        img.onload = async () => {
+          try {
+            await img.decode();
+          } catch {}
+          if (!disposed) {
+            frames[i] = img;
+            // Redraw if this frame is closer to where the head should be.
+            const want = Math.round(current);
+            if (drawn < 0 || Math.abs(i - want) < Math.abs(drawn - want)) draw(true);
+          }
+          resolve(true);
+        };
+        img.onerror = () => resolve(false);
+        img.src = src(set, i);
+      });
+
+    const loadRest = async () => {
+      if (reduced) return;
+      // Centre-out order so the frames nearest the resting pose come first.
+      const order = [];
+      for (let d = 1; d < N; d++) {
+        if (mid - d >= 0) order.push(mid - d);
+        if (mid + d < N) order.push(mid + d);
+      }
+      // A few at a time keeps the network free for everything else.
+      const queue = order.slice();
+      const worker = async () => {
+        while (queue.length && !disposed) await load(queue.shift());
+      };
+      await Promise.all([worker(), worker(), worker()]);
+    };
+
+    resize();
+    load(mid, "high").then((ok) => {
+      if (!ok) return setFailed(true);
+      const start = () => {
+        const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+        idle(() => loadRest(), { timeout: 2500 });
+      };
+      if (document.readyState === "complete") start();
+      else window.addEventListener("load", start, { once: true });
     });
 
-    if (reduced) return;
-
-    const run = (fn) => {
-      const loop = (t) => {
-        fn(t);
-        setActive(current);
-        rafId = requestAnimationFrame(loop);
-      };
-      rafId = requestAnimationFrame(loop);
+    // ---- input ----------------------------------------------------------
+    const onMove = (e) => {
+      target = Math.min(1, Math.max(0, e.clientX / window.innerWidth)) * (N - 1);
+      wake();
     };
+    const onTilt = (e) => {
+      if (e.gamma == null) return;
+      tiltActive = true;
+      target = Math.min(1, Math.max(0, (e.gamma + 40) / 80)) * (N - 1);
+      wake();
+    };
+    if (!coarse) window.addEventListener("mousemove", onMove, { passive: true });
+    else window.addEventListener("deviceorientation", onTilt);
 
-    if (!coarse) {
-      const onMove = (e) => {
-        const ratio = Math.min(1, Math.max(0, e.clientX / window.innerWidth));
-        target = ratio * (FRAME_COUNT - 1);
-      };
-      window.addEventListener("mousemove", onMove, { passive: true });
-      cleanup = () => window.removeEventListener("mousemove", onMove);
-      run(() => {
-        current += (target - current) * 0.12;
-      });
-    } else {
-      // Touch: tilt-follow when available, gentle idle sweep otherwise.
-      let usingTilt = false;
-      const onTilt = (e) => {
-        if (e.gamma == null) return;
-        usingTilt = true;
-        const ratio = Math.min(1, Math.max(0, (e.gamma + 40) / 80));
-        target = ratio * (FRAME_COUNT - 1);
-      };
-      window.addEventListener("deviceorientation", onTilt);
-      cleanup = () => window.removeEventListener("deviceorientation", onTilt);
+    // Visible = on screen AND tab in front. Coming back into view catches
+    // the head up to wherever the cursor went while it was asleep.
+    const refresh = () => {
+      visible = inView && document.visibilityState === "visible";
+      if (visible) wake();
+    };
+    const io = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      refresh();
+    });
+    io.observe(wrap);
+    const onVis = refresh;
+    document.addEventListener("visibilitychange", onVis);
 
-      const start = performance.now();
-      run((now) => {
-        if (!usingTilt) {
-          const wave = Math.sin(((now - start) / 1000) * 0.4);
-          target = ((wave + 1) / 2) * (FRAME_COUNT - 1);
-        }
-        current += (target - current) * (usingTilt ? 0.1 : 0.05);
-      });
-    }
+    const ro = new ResizeObserver(resize);
+    ro.observe(wrap);
+    if (coarse) wake();
 
     return () => {
-      cleanup();
-      if (rafId) cancelAnimationFrame(rafId);
+      disposed = true;
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("deviceorientation", onTilt);
+      document.removeEventListener("visibilitychange", onVis);
+      io.disconnect();
+      ro.disconnect();
     };
-  }, [srcs]);
+  }, []);
 
   if (failed) {
     return (
       <div className={`${className} flex items-center justify-center`}>
-        <div className="max-w-xs rounded-xl border border-red-500/40 bg-red-950/40 p-5 text-center">
-          <p className="text-xs tracking-[0.2em] uppercase text-red-400 mb-2">
-            Character frames not found
-          </p>
-          <p className="text-xs text-red-200/80 leading-relaxed">
-            Expected <code className="text-red-300">/public/images/mascot/desktop/</code> and
-            {" "}<code className="text-red-300">/mobile/</code> to contain frame-01 … frame-60.webp.
-          </p>
-        </div>
+        <p className="max-w-[16rem] rounded-xl border border-red-500/40 bg-red-950/40 p-4 text-center text-xs text-red-200/80">
+          Character frames not found in <code>/public/images/character/</code>.
+        </p>
       </div>
     );
   }
 
-  if (!srcs) return <div className={className} aria-hidden="true" />;
-
   return (
-    <div className={className} aria-hidden="true">
-      {srcs.map((src, i) => (
-        <img
-          key={src}
-          ref={(el) => (imgRefs.current[i] = el)}
-          src={src}
-          alt=""
-          draggable={false}
-          fetchPriority={i === Math.floor(FRAME_COUNT / 2) ? "high" : "low"}
-          className="absolute inset-0 h-full w-full object-contain object-bottom pointer-events-none select-none"
-          style={{ opacity: 0 }}
-        />
-      ))}
+    <div ref={wrapRef} className={className} aria-hidden="true">
+      <canvas ref={canvasRef} className="block h-full w-full" />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import SectionHeading from "@/components/SectionHeading";
+import { onScrollFrame } from "@/lib/motion";
 
 // "What we do" as a deck of cards that stack as you scroll. Each card pins
 // just below the one before; as the next card slides over it, the card
@@ -22,11 +23,16 @@ const ICONS = {
 export default function ServicesStack({ services }) {
   const cardRefs = useRef([]);
 
+  const sectionRef = useRef(null);
+
+  // Runs only on frames where the page scrolled, and only while this
+  // section is on screen (the shared scheduler + IntersectionObserver).
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-    let raf;
-    const tick = () => {
+    if (reduced || !sectionRef.current) return;
+    let near = false;
+    const update = () => {
+      if (!near) return;
       const cards = cardRefs.current;
       for (let i = 0; i < cards.length - 1; i++) {
         const card = cards[i];
@@ -39,17 +45,28 @@ export default function ServicesStack({ services }) {
         const inner = card.firstElementChild;
         if (inner) {
           inner.style.transform = `scale(${1 - overlap * 0.06})`;
-          inner.style.filter = `brightness(${1 - overlap * 0.25})`;
+          // Dim with a cheap overlay opacity rather than a filter.
+          inner.style.setProperty("--dim", String(overlap * 0.28));
         }
       }
-      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    const io = new IntersectionObserver(
+      ([e]) => {
+        near = e.isIntersecting;
+        if (near) update(); // catch up — the observer fires after the scroll frame
+      },
+      { rootMargin: "10% 0px" }
+    );
+    io.observe(sectionRef.current);
+    const off = onScrollFrame(update);
+    return () => {
+      off();
+      io.disconnect();
+    };
   }, []);
 
   return (
-    <section className="relative px-4 sm:px-6 md:px-10 py-20 md:py-32">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 md:px-10 py-20 md:py-32">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <SectionHeading
@@ -74,10 +91,11 @@ export default function ServicesStack({ services }) {
                 style={{ top: `calc(${84 + i * 10}px + env(safe-area-inset-top))` }}
               >
                 <article
-                  className={`origin-top overflow-hidden rounded-[1.75rem] md:rounded-[2.25rem] border transition-[filter] ${
+                  className={`relative origin-top overflow-hidden rounded-[1.75rem] md:rounded-[2.25rem] border will-change-transform ${
                     dark ? "bg-graphite text-white border-white/5" : "bg-card text-graphite border-line"
                   } shadow-[0_30px_60px_-30px_rgba(13,15,18,0.35)]`}
                 >
+                  <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 bg-graphite" style={{ opacity: "var(--dim, 0)" }} />
                   <div className="grid gap-8 p-7 sm:p-10 md:grid-cols-12 md:items-center md:p-14 min-h-[300px] md:min-h-[360px]">
                     <div className="md:col-span-2 flex md:block items-center justify-between">
                       <span className={`font-display text-5xl md:text-7xl ${dark ? "text-white/15" : "text-graphite/10"}`}>{s.number}</span>

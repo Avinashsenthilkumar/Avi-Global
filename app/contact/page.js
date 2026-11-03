@@ -36,7 +36,7 @@ export default function ContactPage() {
 
           <Reveal delay={0.15}>
             <aside className="grain relative h-full overflow-hidden rounded-[2rem] bg-graphite p-8 text-white md:p-10">
-              <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-ember/35 blur-[90px]" />
+              <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 glow scale-[1.7] [--glow-a:0.35]" />
               <div className="relative flex h-full flex-col">
                 <p className="label text-ember-light">Reach us directly</p>
                 <dl className="mt-8 divide-y divide-white/10">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useVisibleLoop } from "@/lib/motion";
 
 // Two counter-scrolling bands of service names. Their speed reacts to how
 // fast you scroll and flips direction when you scroll back up — a small
@@ -10,38 +11,46 @@ export default function Marquee({ items, tone = "dark" }) {
   const rowA = useRef(null);
   const rowB = useRef(null);
 
+  const sectionRef = useRef(null);
+  const state = useRef({ x: 0, lastY: 0, velocity: 0, dir: 1, wA: 1, wB: 1, reduced: false });
+
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
-    let x = 0;
-    let lastY = window.scrollY;
-    let velocity = 0;
-    let dir = 1;
-    let raf;
-    const tick = () => {
-      const y = window.scrollY;
-      const dy = y - lastY;
-      lastY = y;
-      if (Math.abs(dy) > 0.5) dir = dy > 0 ? 1 : -1;
-      velocity += (Math.min(40, Math.abs(dy)) - velocity) * 0.1;
-      x += (0.6 + velocity * 0.25) * dir;
-      const wA = rowA.current?.scrollWidth / 2 || 1;
-      const wB = rowB.current?.scrollWidth / 2 || 1;
-      const a = ((x % wA) + wA) % wA;
-      const b = ((x % wB) + wB) % wB;
-      if (rowA.current) rowA.current.style.transform = `translate3d(${-a}px,0,0)`;
-      if (rowB.current) rowB.current.style.transform = `translate3d(${b - wB}px,0,0)`;
-      raf = requestAnimationFrame(tick);
+    const st = state.current;
+    st.reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    st.lastY = window.scrollY;
+    // Measure once (and on resize) instead of reading layout every frame.
+    const measure = () => {
+      st.wA = (rowA.current?.scrollWidth || 2) / 2;
+      st.wB = (rowB.current?.scrollWidth || 2) / 2;
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    measure();
+    window.addEventListener("resize", measure);
+    document.fonts?.ready?.then(measure);
+    return () => window.removeEventListener("resize", measure);
   }, []);
+
+  // Only animates while the band is on screen and the tab is visible.
+  useVisibleLoop(sectionRef, () => {
+    const st = state.current;
+    if (st.reduced) return false;
+    const y = window.scrollY;
+    const dy = y - st.lastY;
+    st.lastY = y;
+    if (Math.abs(dy) > 0.5) st.dir = dy > 0 ? 1 : -1;
+    st.velocity += (Math.min(40, Math.abs(dy)) - st.velocity) * 0.1;
+    st.x += (0.6 + st.velocity * 0.25) * st.dir;
+    const a = ((st.x % st.wA) + st.wA) % st.wA;
+    const b = ((st.x % st.wB) + st.wB) % st.wB;
+    if (rowA.current) rowA.current.style.transform = `translate3d(${-a}px,0,0)`;
+    if (rowB.current) rowB.current.style.transform = `translate3d(${b - st.wB}px,0,0)`;
+  });
 
   const dark = tone === "dark";
   const doubled = [...items, ...items];
 
   return (
     <section
+      ref={sectionRef}
       aria-label="Services"
       className={`relative overflow-hidden py-6 md:py-8 ${dark ? "bg-graphite text-white" : "bg-paper-2 text-graphite"}`}
     >

@@ -42,7 +42,7 @@ export default function ProjectDetailPage({ params }) {
   return (
     <>
       <section className="relative overflow-x-clip px-4 sm:px-6 md:px-10 pt-32 md:pt-44 pb-12">
-        <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] rounded-full bg-ember/20 blur-[140px]" />
+        <div className="pointer-events-none absolute -left-40 -top-40 h-[520px] w-[520px] glow scale-[1.7] [--glow-a:0.2]" />
         <div className="relative mx-auto max-w-7xl">
           <Reveal>
             <Link href="/projects" data-cursor="hover" className="group inline-flex items-center gap-2 label text-steel hover:text-graphite">

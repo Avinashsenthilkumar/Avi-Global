@@ -23,7 +23,7 @@ export default function MobileTabBar() {
   return (
     <nav
       aria-label="App navigation"
-      className="fixed inset-x-0 bottom-0 z-40 md:hidden border-t border-graphite/10 bg-white/85 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 z-40 md:hidden border-t border-graphite/10 bg-white shadow-[0_-8px_24px_-16px_rgba(13,15,18,0.25)]"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <ul className="grid h-16 grid-cols-5">

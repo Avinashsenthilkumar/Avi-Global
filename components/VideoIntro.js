@@ -15,7 +15,9 @@ import Logo from "@/components/Logo";
 // "Skip intro" jumps straight to step 3. If autoplay is blocked or the file
 // fails, it goes to step 3 immediately — never a stuck black screen.
 
+// Phones get a 480p cut (~1 MB) of the same film; desktops the 720p (~2 MB).
 const VIDEO_SRC = "/videos/brand-film.mp4";
+const VIDEO_SRC_MOBILE = "/videos/brand-film-mobile.mp4";
 const POSTER_SRC = "/videos/brand-film-poster.jpg";
 const SEEN_KEY = "avi-intro-seen";
 
@@ -24,6 +26,7 @@ export default function VideoIntro({ onComplete }) {
   const doneRef = useRef(false);
   const [phase, setPhase] = useState("logo"); // logo | video | lifting | done
   const [mounted, setMounted] = useState(false);
+  const [small, setSmall] = useState(false);
 
   const finish = () => {
     if (doneRef.current) return;
@@ -38,6 +41,7 @@ export default function VideoIntro({ onComplete }) {
 
   useEffect(() => {
     setMounted(true);
+    setSmall(window.matchMedia("(max-width: 767px)").matches);
     let seen = false;
     try {
       seen = sessionStorage.getItem(SEEN_KEY) === "1";
@@ -91,7 +95,7 @@ export default function VideoIntro({ onComplete }) {
         }`}
       >
         <div className="animate-[fadeLogo_1.2s_cubic-bezier(0.22,1,0.36,1)_both]">
-          <Logo variant="full" priority className="h-44 md:h-60 w-auto" />
+          <Logo variant="full" priority height={240} className="h-44 md:h-60 w-auto" />
         </div>
         <div className="h-px w-40 overflow-hidden bg-white/10">
           <div className="h-full w-full origin-left bg-ember-gradient animate-[growLine_1.4s_cubic-bezier(0.76,0,0.24,1)_both]" />
@@ -105,7 +109,7 @@ export default function VideoIntro({ onComplete }) {
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
             phase === "video" ? "opacity-100" : "opacity-0"
           }`}
-          src={VIDEO_SRC}
+          src={small ? VIDEO_SRC_MOBILE : VIDEO_SRC}
           poster={POSTER_SRC}
           muted
           playsInline
@@ -121,7 +125,7 @@ export default function VideoIntro({ onComplete }) {
         type="button"
         onClick={finish}
         data-cursor="hover"
-        className="absolute bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 md:bottom-10 md:right-10 rounded-full border border-white/25 px-5 py-2.5 text-[11px] uppercase tracking-[0.2em] text-white/85 backdrop-blur transition-colors duration-300 hover:border-ember hover:text-ember-light"
+        className="absolute bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-6 md:bottom-10 md:right-10 rounded-full border border-white/25 px-5 py-2.5 text-[11px] uppercase tracking-[0.2em] bg-black/40 text-white/85 transition-colors duration-300 hover:border-ember hover:text-ember-light"
       >
         Skip intro
       </button>

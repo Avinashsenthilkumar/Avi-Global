@@ -25,14 +25,44 @@ export default function SmoothScroll() {
     });
     window.__lenis = lenis;
 
-    let raf;
+    // Drive Lenis only while it is actually animating. Once the scroll has
+    // come to rest the loop stops, and the next wheel / key / scrollTo wakes
+    // it — so a page you're just reading costs no frames at all.
+    let raf = 0;
+    let running = false;
+    let idle = 0;
     const loop = (time) => {
       lenis.raf(time);
+      const busy = lenis.isScrolling || lenis.animate?.isRunning;
+      idle = busy ? 0 : idle + 1;
+      if (idle > 20) {
+        running = false;
+        return;
+      }
       raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
+    const wake = () => {
+      idle = 0;
+      if (running) return;
+      running = true;
+      lenis.time = 0; // restart Lenis' clock so the first frame isn't a jump
+      raf = requestAnimationFrame(loop);
+    };
+    const scrollTo = lenis.scrollTo.bind(lenis);
+    lenis.scrollTo = (...args) => {
+      wake();
+      return scrollTo(...args);
+    };
+    const opts = { capture: true, passive: true };
+    window.addEventListener("wheel", wake, opts);
+    window.addEventListener("keydown", wake, opts);
+    window.addEventListener("pointerdown", wake, opts);
+    wake();
 
     return () => {
+      window.removeEventListener("wheel", wake, opts);
+      window.removeEventListener("keydown", wake, opts);
+      window.removeEventListener("pointerdown", wake, opts);
       cancelAnimationFrame(raf);
       lenis.destroy();
       window.__lenis = undefined;
