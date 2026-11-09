@@ -6,10 +6,13 @@ import { usePathname } from "next/navigation";
 import { navLinks, siteConfig } from "@/lib/config";
 import Logo from "@/components/Logo";
 
-// Floating glass navigation. Transparent over the top of each page, frosted
-// once you scroll, and it tucks away while scrolling down and returns the
-// moment you scroll up — so it never sits on top of the content you're
-// reading. Mobile gets a full-screen menu with staggered links.
+// Floating glass navigation.
+//  • Desktop: a steady frosted pill that always stays put — no hiding or
+//    sliding — with the links truly centred on the page (3-column grid, so a
+//    wider button on the right can't push them off-centre).
+//  • Phones/tablets: transparent at the top, frosted once you scroll, and it
+//    tucks away while scrolling down (the bottom tab bar stays), returning
+//    the moment you scroll up. Full-screen menu with staggered links.
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -49,18 +52,18 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 top-0 z-50 px-3 sm:px-5 pt-3 transition-transform duration-500 ease-out ${
+        className={`fixed inset-x-0 top-0 z-50 px-3 sm:px-5 md:px-10 pt-3 transition-transform duration-500 ease-out lg:!translate-y-0 ${
           hidden && !open ? "-translate-y-[120%]" : "translate-y-0"
         }`}
       >
         <div
-          className={`mx-auto flex h-[66px] md:h-[84px] max-w-7xl items-center justify-between rounded-full pl-3 pr-2 md:pl-5 transition-all duration-500 ease-out ${
+          className={`mx-auto flex h-[66px] md:h-[84px] max-w-7xl items-center justify-between rounded-full pl-3 pr-2 md:pl-5 lg:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6 transition-[background-color,border-color,box-shadow] duration-500 ease-out ${
             scrolled || open
               ? "bg-white/85 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(13,15,18,0.18)] border border-white/60"
-              : "bg-transparent border border-transparent"
+              : "bg-transparent border border-transparent lg:bg-white/70 lg:backdrop-blur-md lg:border-white/60 lg:shadow-[0_8px_30px_-16px_rgba(13,15,18,0.16)]"
           }`}
         >
-          <Link href="/" aria-label={`${siteConfig.name} home`} data-cursor="hover" className="flex items-center">
+          <Link href="/" aria-label={`${siteConfig.name} home`} data-cursor="hover" className="flex items-center lg:justify-self-start">
             <Logo variant="compact" priority height={64} className="h-[50px] md:h-16 w-auto" />
           </Link>
 
@@ -91,7 +94,7 @@ export default function Navbar() {
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 lg:justify-self-end">
             <Link
               href="/contact"
               data-cursor="hover"
