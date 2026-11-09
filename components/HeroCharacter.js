@@ -15,7 +15,8 @@ import { useEffect, useRef, useState } from "react";
 //  • The animation loop sleeps: it stops once the head has settled on the
 //    cursor, when the hero is scrolled out of view, and when the tab is
 //    hidden. Moving the mouse wakes it.
-//  • Phones get a lighter 30-frame set (tilt / idle sweep doesn't need 60).
+//  • Phones get a lighter 30-frame set. On touch screens the head follows
+//    your finger, real phone tilts, and otherwise looks around on its own.
 
 const SETS = {
   desktop: { dir: "/images/character/desktop", count: 60 },
@@ -50,8 +51,11 @@ export default function HeroCharacter({ className = "" }) {
     let visible = true;
     let inView = true;
     let disposed = false;
-    let tiltActive = false;
-    const t0 = performance.now();
+    let lastInput = -Infinity; // time of the last finger / tilt / mouse input
+    let lastTick = 0;
+    let sweepT = 0;
+    let touchSeen = false;
+    let gBase = null; // slowly-adapting "resting" tilt of the phone
 
     // ---- drawing -------------------------------------------------------
     const nearestLoaded = (i) => {
@@ -90,21 +94,30 @@ export default function HeroCharacter({ className = "" }) {
     };
 
     // ---- loop (sleeps whenever there's nothing to do) -------------------
+    // Mouse: the head follows the cursor and the loop sleeps once it has
+    // caught up. Phones and tablets: the head follows your finger while you
+    // touch the screen, follows real tilting of the phone, and otherwise
+    // keeps looking around on its own — so it is always alive on mobile.
     const tick = (now) => {
-      if (!coarse) {
-        current += (target - current) * 0.14;
-        if (Math.abs(target - current) < 0.02) current = target;
-      } else {
-        if (!tiltActive) {
-          const wave = Math.sin(((now - t0) / 1000) * 0.4);
-          target = ((wave + 1) / 2) * (N - 1);
-        }
-        current += (target - current) * (tiltActive ? 0.12 : 0.06);
+      const handsOff = now - lastInput > 2200;
+      const idleCapable = coarse || touchSeen;
+      const sweeping = handsOff && idleCapable;
+      if (sweeping) {
+        // Idle look-around, phase-locked so it eases in from wherever the
+        // head is instead of snapping.
+        sweepT += Math.min(50, now - (lastTick || now)) / 1000;
+        const wave = Math.sin(sweepT * 0.7);
+        target = ((wave + 1) / 2) * (N - 1);
       }
+      lastTick = now;
+      const ease = sweeping ? 0.05 : 0.16;
+      current += (target - current) * ease;
+      if (Math.abs(target - current) < 0.02) current = target;
       draw();
-      const settled = !coarse && current === target;
+      const settled = !idleCapable && current === target;
       if (!visible || settled || disposed) {
         running = false;
+        lastTick = 0;
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -157,27 +170,55 @@ export default function HeroCharacter({ className = "" }) {
     resize();
     load(mid, "high").then((ok) => {
       if (!ok) return setFailed(true);
+      let started = false;
       const start = () => {
-        const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
-        idle(() => loadRest(), { timeout: 2500 });
+        if (started) return;
+        started = true;
+        const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 120));
+        idle(() => loadRest(), { timeout: 1200 });
       };
       if (document.readyState === "complete") start();
-      else window.addEventListener("load", start, { once: true });
+      else {
+        window.addEventListener("load", start, { once: true });
+        // Phones: don't let a slow third-party asset hold the animation back.
+        setTimeout(start, coarse ? 900 : 2500);
+      }
     });
 
     // ---- input ----------------------------------------------------------
-    const onMove = (e) => {
-      target = Math.min(1, Math.max(0, e.clientX / window.innerWidth)) * (N - 1);
+    const aim = (clientX) => {
+      target = Math.min(1, Math.max(0, clientX / window.innerWidth)) * (N - 1);
+      lastInput = performance.now();
       wake();
     };
+    const onMove = (e) => aim(e.clientX);
+    // Touch: listen passively so vertical scrolling is never blocked. These
+    // also make the head respond in the browser's mobile emulation, where
+    // the mouse is turned into touches.
+    const onTouch = (e) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      touchSeen = true;
+      aim(t.clientX);
+    };
+    // Tilt: only real movement counts. Android fires orientation events
+    // constantly, even with the phone lying still — the old code treated that
+    // as "tilt mode" and froze the head in the middle. Now small or steady
+    // readings are ignored and the idle look-around carries on.
     const onTilt = (e) => {
       if (e.gamma == null) return;
-      tiltActive = true;
-      target = Math.min(1, Math.max(0, (e.gamma + 40) / 80)) * (N - 1);
+      if (gBase === null) gBase = e.gamma;
+      gBase += (e.gamma - gBase) * 0.02;
+      const delta = e.gamma - gBase;
+      if (Math.abs(delta) < 4) return;
+      target = Math.min(1, Math.max(0, 0.5 + delta / 40)) * (N - 1);
+      lastInput = performance.now();
       wake();
     };
-    if (!coarse) window.addEventListener("mousemove", onMove, { passive: true });
-    else window.addEventListener("deviceorientation", onTilt);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    window.addEventListener("touchmove", onTouch, { passive: true });
+    if (coarse) window.addEventListener("deviceorientation", onTilt, { passive: true });
 
     // Visible = on screen AND tab in front. Coming back into view catches
     // the head up to wherever the cursor went while it was asleep.
@@ -201,6 +242,8 @@ export default function HeroCharacter({ className = "" }) {
       disposed = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("touchstart", onTouch);
+      window.removeEventListener("touchmove", onTouch);
       window.removeEventListener("deviceorientation", onTilt);
       document.removeEventListener("visibilitychange", onVis);
       io.disconnect();

@@ -36,7 +36,9 @@ export default function MotionObserver() {
           }
         });
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+      // threshold 0 + a bottom margin: tall blocks on narrow phones (which
+      // can never be 12% visible) still reveal.
+      { rootMargin: "0px 0px -10% 0px", threshold: 0 }
     );
 
     const watch = (root) => {

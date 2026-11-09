@@ -19,7 +19,7 @@ const CHIPS = [
 
 const LIGHT = 1040; // spotlight diameter in px
 
-export default function HeroStage({ revealed }) {
+export default function HeroStage({ revealed, boot = false }) {
   const stageRef = useRef(null);
   const tiltRef = useRef(null);
   const lightRef = useRef(null);
@@ -91,10 +91,12 @@ export default function HeroStage({ revealed }) {
   return (
     <div
       ref={stageRef}
-      className={`relative h-full w-full transition-[opacity,transform] duration-[1400ms] ease-out ${
-        revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+      className={`relative h-full w-full ${
+        boot
+          ? "hero-fade hero-fade-lg"
+          : `transition-[opacity,transform] duration-[1400ms] ease-out ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`
       }`}
-      style={{ transitionDelay: revealed ? "250ms" : "0ms" }}
+      style={boot ? { "--hd": "200ms" } : { transitionDelay: revealed ? "250ms" : "0ms" }}
     >
       <div
         ref={tiltRef}
@@ -162,7 +164,11 @@ export default function HeroStage({ revealed }) {
         {/* Corner caption */}
         <div className="absolute left-5 right-5 top-5 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/45">
           <span>Thanjavur → Worldwide</span>
-          <span className="hidden md:inline">Move your cursor</span>
+          <span className="hidden [@media(pointer:fine)]:inline">Move your cursor</span>
+          <span className="flex items-center gap-1.5 [@media(pointer:fine)]:hidden">
+            <span className="h-1.5 w-1.5 rounded-full bg-ember animate-pulse" />
+            Swipe to turn
+          </span>
         </div>
       </div>
     </div>

@@ -297,6 +297,41 @@ html.lenis body {
   }
 }
 
+/* Hero entrance that needs no JavaScript: it starts on first paint, so the
+   headline is on screen as early as possible (good for phones and LCP). */
+.hero-fade {
+  animation: heroFade 1s var(--ease-out) backwards;
+  animation-delay: var(--hd, 0ms);
+}
+.hero-fade-lg {
+  animation-duration: 1.3s;
+  animation-name: heroFadeLg;
+}
+.hero-boot .rl-line > span {
+  transform: none;
+  transition: none;
+  animation: lineUp 1.05s var(--ease-out) backwards;
+  animation-delay: var(--d, 0ms);
+}
+.hero-boot .rw-word > span {
+  transform: none;
+  transition: none;
+  animation: wordUp 0.9s var(--ease-out) backwards;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes heroFade {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+}
+@keyframes heroFadeLg {
+  from { opacity: 0; transform: translate3d(0, 36px, 0) scale(0.97); }
+}
+@keyframes lineUp {
+  from { transform: translate3d(0, 110%, 0); }
+}
+@keyframes wordUp {
+  from { transform: translate3d(0, 105%, 0) rotate(4deg); }
+}
+
 @keyframes pageIn {
   from {
     opacity: 0;

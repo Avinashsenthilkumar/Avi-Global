@@ -25,14 +25,20 @@ export default function Hero({ revealed }) {
     }
   });
 
-  const fade = (delay) =>
-    `transition-all duration-1000 ease-out ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`;
-  const delayStyle = (ms) => ({ transitionDelay: revealed ? `${ms}ms` : "0ms" });
+  // "boot": no intro, so the entrance is pure CSS keyframes that start on
+  // first paint (see .hero-boot in globals.css). With the intro on, the
+  // older transition-based entrance waits for the intro to finish.
+  const boot = !siteConfig.showIntro;
+  const fade = () =>
+    boot
+      ? "hero-fade"
+      : `transition-all duration-1000 ease-out ${revealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`;
+  const delayStyle = (ms) => (boot ? { "--hd": `${ms}ms` } : { transitionDelay: revealed ? `${ms}ms` : "0ms" });
 
   return (
     <section
       ref={sectionRef}
-      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-28 md:pt-32 lg:pt-32 pb-14 md:pb-20 lg:pb-16 lg:min-h-[100svh] lg:flex lg:items-center"
+      className="grain relative overflow-hidden px-4 sm:px-6 md:px-10 pt-24 md:pt-32 lg:pt-32 pb-12 md:pb-20 lg:pb-16 lg:min-h-[100svh] lg:flex lg:items-center"
     >
       {/* Ambient light + dot grid */}
       <div className="pointer-events-none absolute -left-40 -top-40 h-[620px] w-[620px] glow scale-[1.7] [--glow-a:0.2]" />
@@ -42,10 +48,13 @@ export default function Hero({ revealed }) {
         style={{ maskImage: "radial-gradient(ellipse at 30% 40%, #000 10%, transparent 70%)", WebkitMaskImage: "radial-gradient(ellipse at 30% 40%, #000 10%, transparent 70%)" }}
       />
 
-      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-12 lg:gap-8">
+      {/* Phones and tablets: the copy column "dissolves" (display: contents) so
+          the character can sit right under the headline — visible on the
+          very first screen instead of below the buttons. */}
+      <div className="relative mx-auto grid w-full max-w-7xl items-center gap-0 lg:grid-cols-12 lg:gap-8">
         {/* Copy */}
-        <div ref={textRef} className={`lg:col-span-7 ${revealed ? "is-in" : ""}`}>
-          <div className={`mb-7 flex items-center gap-3 ${fade()}`} style={delayStyle(100)}>
+        <div ref={textRef} className={`contents lg:block lg:col-span-7 ${boot ? "hero-boot" : revealed ? "is-in" : ""}`}>
+          <div className={`order-1 mb-6 md:mb-7 flex items-center gap-3 ${fade()}`} style={delayStyle(100)}>
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full rounded-full bg-ember animate-[pulse-ring_1.8s_ease-out_infinite]" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-ember" />
@@ -59,18 +68,18 @@ export default function Hero({ revealed }) {
             delay={0.25}
             stagger={0.11}
             text={"We build\n*digital solutions*\nthat move\nbusiness forward."}
-            className="font-display font-medium uppercase leading-[0.95] tracking-[-0.02em] text-[2.9rem] sm:text-6xl md:text-7xl lg:text-[4.6rem] xl:text-[5.1rem] 2xl:text-[5.6rem]"
+            className="order-2 font-display font-medium uppercase leading-[0.95] tracking-[-0.02em] text-[2.55rem] sm:text-6xl md:text-7xl lg:text-[4.6rem] xl:text-[5.1rem] 2xl:text-[5.6rem]"
           />
 
           <p
-            className={`mt-7 max-w-[34rem] text-[15px] md:text-[17px] leading-relaxed text-steel ${fade()}`}
+            className={`order-4 mt-7 max-w-[34rem] text-[15px] md:text-[17px] leading-relaxed text-steel ${fade()}`}
             style={delayStyle(850)}
           >
             From powerful websites and e-commerce platforms to custom web applications and mobile apps,
             AVI GLOBAL SOLUTIONS delivers end-to-end digital solutions built for modern businesses.
           </p>
 
-          <div className={`mt-9 flex flex-col sm:flex-row gap-3 sm:gap-4 ${fade()}`} style={delayStyle(1000)}>
+          <div className={`order-5 mt-8 md:mt-9 flex flex-col sm:flex-row gap-3 sm:gap-4 ${fade()}`} style={delayStyle(1000)}>
             <MagneticButton>
               <Link
                 href="/contact"
@@ -94,7 +103,7 @@ export default function Hero({ revealed }) {
             </MagneticButton>
           </div>
 
-          <div className={`mt-10 hidden md:flex items-center gap-6 text-[12px] text-steel ${fade()}`} style={delayStyle(1150)}>
+          <div className={`order-6 mt-10 hidden md:flex items-center gap-6 text-[12px] text-steel ${fade()}`} style={delayStyle(1150)}>
             {siteConfig.regions.map((r, i) => (
               <span key={r} className="flex items-center gap-6">
                 {i > 0 && <span className="h-3 w-px bg-graphite/20" />}
@@ -105,8 +114,8 @@ export default function Hero({ revealed }) {
         </div>
 
         {/* Stage */}
-        <div ref={stageWrapRef} className="lg:col-span-5 h-[64svh] min-h-[440px] max-h-[780px] lg:h-[calc(100svh-10rem)] lg:min-h-[520px] will-change-transform">
-          <HeroStage revealed={revealed} />
+        <div ref={stageWrapRef} className="order-3 lg:order-none mt-7 lg:mt-0 lg:col-span-5 h-[50svh] min-h-[340px] max-h-[780px] md:h-[64svh] md:min-h-[440px] lg:h-[calc(100svh-10rem)] lg:min-h-[520px] will-change-transform">
+          <HeroStage revealed={revealed} boot={boot} />
         </div>
       </div>
 

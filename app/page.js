@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import VideoIntro from "@/components/VideoIntro";
 import Hero from "@/components/Hero";
 import Marquee from "@/components/Marquee";
@@ -25,15 +25,10 @@ const CAPABILITIES = [
 ];
 
 export default function HomePage() {
-  const [revealed, setRevealed] = useState(false);
-
-  // With the intro switched off, start the hero entrance on the next frame
-  // so its animation still plays.
-  useEffect(() => {
-    if (siteConfig.showIntro) return;
-    const id = requestAnimationFrame(() => setRevealed(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  // Without the intro, the hero is "revealed" from the very first server
+  // render: its entrance then runs as plain CSS the moment the page paints,
+  // instead of waiting for JavaScript to load — much faster on phones.
+  const [revealed, setRevealed] = useState(!siteConfig.showIntro);
 
   return (
     <>
