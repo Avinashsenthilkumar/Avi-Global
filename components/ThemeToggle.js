@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-// Light / dark switch. The new theme is revealed with an ink blot that
-// blooms out from this button (CSS in globals.css, "Theme switch").
+// Light / dark switch. The new theme crawls over the page like living
+// liquid ("venom") sweeping out from this button (CSS in globals.css, "Theme switch").
 //  • The choice is remembered (localStorage "avi-theme"); a tiny script in
 //    the <head> applies it before the first paint, so there's no flash.
 //  • Without the View Transitions API, or with reduced motion, the theme
@@ -31,7 +31,7 @@ export default function ThemeToggle({ className = "" }) {
     // Warm the ink mask so the very first switch has it ready.
     const id = setTimeout(() => {
       const img = new Image();
-      img.src = "/theme/ink-mask.png";
+      img.src = "/theme/venom-mask.webp";
     }, 1500);
     return () => clearTimeout(id);
   }, []);

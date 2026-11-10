@@ -56,37 +56,80 @@
 /* ------------------------------------------------------------------ */
 /* Theme switch — ink transition                                      */
 /* ------------------------------------------------------------------ */
-/* The new theme is revealed through an ink blot that blooms from the
-   toggle in the top-right corner and floods the page. It uses the View
-   Transitions API: the browser snapshots the old page, we flip the theme,
-   and the new page is shown through an animated mask (a 36-frame sprite in
-   /public/theme/ink-mask.png, stepped like a flipbook). Browsers without
-   the API simply switch instantly. */
+/* "Venom" switch: the new theme crawls over the old one as a living band
+   of liquid — streaks and tendrils stretched along its edge, reaching ahead
+   and leaving marbled gaps behind — sweeping out from the toggle in the
+   top-right corner. It uses the View Transitions API: the browser snapshots
+   the old page, we flip the theme, and the new page is shown through an
+   animated mask. The mask is a 48-frame flipbook (8 x 6 grid in
+   /public/theme/venom-mask.webp, generated procedurally — the edge writhes
+   frame to frame instead of just growing). Browsers without the API simply
+   switch instantly. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 html.theme-ink::view-transition-new(root) {
-  -webkit-mask-image: url("/theme/ink-mask.png");
-  mask-image: url("/theme/ink-mask.png");
-  -webkit-mask-size: 3600% 100%;
-  mask-size: 3600% 100%;
+  -webkit-mask-image: url("/theme/venom-mask.webp");
+  mask-image: url("/theme/venom-mask.webp");
+  -webkit-mask-size: 800% 600%;
+  mask-size: 800% 600%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-position: 0% 0;
-  mask-position: 0% 0;
-  animation: inkReveal 1.6s steps(35, end) forwards;
+  -webkit-mask-position: 0% 0%;
+  mask-position: 0% 0%;
+  animation: venomReveal 1.7s steps(1, end) forwards;
 }
-@keyframes inkReveal {
-  from {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
-  }
-  to {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
+@keyframes venomReveal {
+  0.0% { -webkit-mask-position: 0.0% 0.0%; mask-position: 0.0% 0.0%; }
+  2.128% { -webkit-mask-position: 14.2857% 0.0%; mask-position: 14.2857% 0.0%; }
+  4.255% { -webkit-mask-position: 28.5714% 0.0%; mask-position: 28.5714% 0.0%; }
+  6.383% { -webkit-mask-position: 42.8571% 0.0%; mask-position: 42.8571% 0.0%; }
+  8.511% { -webkit-mask-position: 57.1429% 0.0%; mask-position: 57.1429% 0.0%; }
+  10.638% { -webkit-mask-position: 71.4286% 0.0%; mask-position: 71.4286% 0.0%; }
+  12.766% { -webkit-mask-position: 85.7143% 0.0%; mask-position: 85.7143% 0.0%; }
+  14.894% { -webkit-mask-position: 100.0% 0.0%; mask-position: 100.0% 0.0%; }
+  17.021% { -webkit-mask-position: 0.0% 20.0%; mask-position: 0.0% 20.0%; }
+  19.149% { -webkit-mask-position: 14.2857% 20.0%; mask-position: 14.2857% 20.0%; }
+  21.277% { -webkit-mask-position: 28.5714% 20.0%; mask-position: 28.5714% 20.0%; }
+  23.404% { -webkit-mask-position: 42.8571% 20.0%; mask-position: 42.8571% 20.0%; }
+  25.532% { -webkit-mask-position: 57.1429% 20.0%; mask-position: 57.1429% 20.0%; }
+  27.66% { -webkit-mask-position: 71.4286% 20.0%; mask-position: 71.4286% 20.0%; }
+  29.787% { -webkit-mask-position: 85.7143% 20.0%; mask-position: 85.7143% 20.0%; }
+  31.915% { -webkit-mask-position: 100.0% 20.0%; mask-position: 100.0% 20.0%; }
+  34.043% { -webkit-mask-position: 0.0% 40.0%; mask-position: 0.0% 40.0%; }
+  36.17% { -webkit-mask-position: 14.2857% 40.0%; mask-position: 14.2857% 40.0%; }
+  38.298% { -webkit-mask-position: 28.5714% 40.0%; mask-position: 28.5714% 40.0%; }
+  40.426% { -webkit-mask-position: 42.8571% 40.0%; mask-position: 42.8571% 40.0%; }
+  42.553% { -webkit-mask-position: 57.1429% 40.0%; mask-position: 57.1429% 40.0%; }
+  44.681% { -webkit-mask-position: 71.4286% 40.0%; mask-position: 71.4286% 40.0%; }
+  46.809% { -webkit-mask-position: 85.7143% 40.0%; mask-position: 85.7143% 40.0%; }
+  48.936% { -webkit-mask-position: 100.0% 40.0%; mask-position: 100.0% 40.0%; }
+  51.064% { -webkit-mask-position: 0.0% 60.0%; mask-position: 0.0% 60.0%; }
+  53.191% { -webkit-mask-position: 14.2857% 60.0%; mask-position: 14.2857% 60.0%; }
+  55.319% { -webkit-mask-position: 28.5714% 60.0%; mask-position: 28.5714% 60.0%; }
+  57.447% { -webkit-mask-position: 42.8571% 60.0%; mask-position: 42.8571% 60.0%; }
+  59.574% { -webkit-mask-position: 57.1429% 60.0%; mask-position: 57.1429% 60.0%; }
+  61.702% { -webkit-mask-position: 71.4286% 60.0%; mask-position: 71.4286% 60.0%; }
+  63.83% { -webkit-mask-position: 85.7143% 60.0%; mask-position: 85.7143% 60.0%; }
+  65.957% { -webkit-mask-position: 100.0% 60.0%; mask-position: 100.0% 60.0%; }
+  68.085% { -webkit-mask-position: 0.0% 80.0%; mask-position: 0.0% 80.0%; }
+  70.213% { -webkit-mask-position: 14.2857% 80.0%; mask-position: 14.2857% 80.0%; }
+  72.34% { -webkit-mask-position: 28.5714% 80.0%; mask-position: 28.5714% 80.0%; }
+  74.468% { -webkit-mask-position: 42.8571% 80.0%; mask-position: 42.8571% 80.0%; }
+  76.596% { -webkit-mask-position: 57.1429% 80.0%; mask-position: 57.1429% 80.0%; }
+  78.723% { -webkit-mask-position: 71.4286% 80.0%; mask-position: 71.4286% 80.0%; }
+  80.851% { -webkit-mask-position: 85.7143% 80.0%; mask-position: 85.7143% 80.0%; }
+  82.979% { -webkit-mask-position: 100.0% 80.0%; mask-position: 100.0% 80.0%; }
+  85.106% { -webkit-mask-position: 0.0% 100.0%; mask-position: 0.0% 100.0%; }
+  87.234% { -webkit-mask-position: 14.2857% 100.0%; mask-position: 14.2857% 100.0%; }
+  89.362% { -webkit-mask-position: 28.5714% 100.0%; mask-position: 28.5714% 100.0%; }
+  91.489% { -webkit-mask-position: 42.8571% 100.0%; mask-position: 42.8571% 100.0%; }
+  93.617% { -webkit-mask-position: 57.1429% 100.0%; mask-position: 57.1429% 100.0%; }
+  95.745% { -webkit-mask-position: 71.4286% 100.0%; mask-position: 71.4286% 100.0%; }
+  97.872% { -webkit-mask-position: 85.7143% 100.0%; mask-position: 85.7143% 100.0%; }
+  100.0% { -webkit-mask-position: 100.0% 100.0%; mask-position: 100.0% 100.0%; }
 }
 
 .logo-img {
