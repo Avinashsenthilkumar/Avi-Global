@@ -8,6 +8,16 @@
 // or (better) adding an <img> path per project in lib/projects.js.
 
 const ILLUSTRATIONS = {
+  "dinopark-kenya": (
+    <g stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 42c2-7 9-11 17-11h5c3 0 5-2 6-5l3-10c1-2 2-3 4-3h3c2 0 3 2 2 3l-2 2h-3l-3 11c-1 5-3 9-6 12" />
+      <path d="M12 42c-3 0-6-1-8-3" />
+      <path d="M12 42c7 3 19 3 26-1" />
+      <path d="M18 43v9M24 44v8M33 43v9M38 41v11" />
+      <path d="M46 15h.01" />
+      <path d="M6 52h52" />
+    </g>
+  ),
   "ganesh-nursery": (
     <g stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <path d="M32 54V30" />

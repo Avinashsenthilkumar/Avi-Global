@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navLinks, siteConfig } from "@/lib/config";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 // Floating glass navigation.
 //  • Desktop: a steady frosted pill that always stays put — no hiding or
@@ -59,8 +60,8 @@ export default function Navbar() {
         <div
           className={`mx-auto flex h-[66px] md:h-[84px] max-w-7xl items-center justify-between rounded-full pl-3 pr-2 md:pl-5 lg:px-6 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6 transition-[background-color,border-color,box-shadow] duration-500 ease-out ${
             scrolled || open
-              ? "bg-white/85 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(13,15,18,0.18)] border border-white/60"
-              : "bg-transparent border border-transparent lg:bg-white/70 lg:backdrop-blur-md lg:border-white/60 lg:shadow-[0_8px_30px_-16px_rgba(13,15,18,0.16)]"
+              ? "bg-white/85 backdrop-blur-md shadow-[0_10px_40px_-12px_rgba(13,15,18,0.18)] border border-white/60 dark:border-white/[0.08]"
+              : "bg-transparent border border-transparent lg:bg-white/70 lg:backdrop-blur-md lg:border-white/60 dark:lg:border-white/[0.08] lg:shadow-[0_8px_30px_-16px_rgba(13,15,18,0.16)]"
           }`}
         >
           <Link href="/" aria-label={`${siteConfig.name} home`} data-cursor="hover" className="flex items-center lg:justify-self-start">
@@ -77,7 +78,7 @@ export default function Navbar() {
                   data-cursor="hover"
                   aria-current={active ? "page" : undefined}
                   className={`group relative overflow-hidden rounded-full px-4 py-2 text-[12px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 ${
-                    active ? "bg-graphite text-white" : "text-graphite/75 hover:text-graphite"
+                    active ? "bg-graphite text-white dark:bg-snow dark:text-coal" : "text-graphite/75 hover:text-graphite"
                   }`}
                 >
                   {/* Text roll on hover */}
@@ -95,10 +96,11 @@ export default function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2 lg:justify-self-end">
+            <ThemeToggle />
             <Link
               href="/contact"
               data-cursor="hover"
-              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-graphite px-5 py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-white transition-transform duration-300 hover:scale-[1.03]"
+              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-graphite px-5 py-3 text-[11px] font-medium uppercase tracking-[0.18em] text-white dark:bg-snow dark:text-coal transition-transform duration-300 hover:scale-[1.03]"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-ember" />
               Start a Project
@@ -110,7 +112,7 @@ export default function Navbar() {
               aria-controls="mobile-menu"
               aria-label={open ? "Close menu" : "Open menu"}
               data-cursor="hover"
-              className="lg:hidden relative grid h-12 w-12 place-items-center rounded-full bg-graphite text-white"
+              className="lg:hidden relative grid h-12 w-12 place-items-center rounded-full bg-graphite text-white dark:bg-snow dark:text-coal"
             >
               <span className={`absolute h-px w-5 bg-current transition-transform duration-500 ease-out ${open ? "rotate-45" : "-translate-y-[4px]"}`} />
               <span className={`absolute h-px w-5 bg-current transition-transform duration-500 ease-out ${open ? "-rotate-45" : "translate-y-[4px]"}`} />

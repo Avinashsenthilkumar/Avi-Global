@@ -43,7 +43,7 @@ export default function WhyUs({ items }) {
                 data-cell=""
                 data-reveal=""
                 style={{ "--d": `${(i % 3) * 110}ms` }}
-                className="group relative border-b border-r border-white/10 bg-white/[0.015] p-8 md:p-10 min-h-[240px]"
+                className="group relative border-b border-r border-white/10 bg-snow/[0.015] p-8 md:p-10 min-h-[240px]"
               >
                 <div
                   className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
@@ -54,7 +54,7 @@ export default function WhyUs({ items }) {
                     <span className="font-display text-5xl text-white/15 transition-colors duration-500 group-hover:text-ember">
                       {item.number}
                     </span>
-                    <span className="h-2 w-2 rounded-full bg-white/20 transition-all duration-500 group-hover:scale-150 group-hover:bg-ember" />
+                    <span className="h-2 w-2 rounded-full bg-snow/20 transition-all duration-500 group-hover:scale-150 group-hover:bg-ember" />
                   </div>
                   <h3 className="mt-10 font-display text-xl md:text-2xl uppercase leading-tight">{item.title}</h3>
                   <p className="mt-3 text-[15px] leading-relaxed text-white/60">{item.text}</p>

@@ -39,7 +39,7 @@ export default function ServicesPage() {
                     {service.items.map((item) => (
                       <li
                         key={item}
-                        className="rounded-full border border-graphite/15 bg-white/70 px-3.5 py-1.5 text-[13px] text-graphite transition-colors duration-500 group-hover:border-white/15 group-hover:bg-white/[0.06] group-hover:text-white/85"
+                        className="rounded-full border border-graphite/15 bg-white/70 px-3.5 py-1.5 text-[13px] text-graphite transition-colors duration-500 group-hover:border-white/15 group-hover:bg-snow/[0.06] group-hover:text-white/85"
                       >
                         {item}
                       </li>

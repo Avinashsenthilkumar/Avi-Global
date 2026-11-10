@@ -88,7 +88,16 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Apply the saved light/dark choice before the first paint (no flash). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('avi-theme')==='dark'){document.documentElement.classList.add('dark');var m=document.querySelector('meta[name=theme-color]');m&&m.setAttribute('content','#0A0B0E')}}catch(e){}",
+          }}
+        />
+      </head>
       <body className="bg-paper text-graphite font-body antialiased">
         <a href="#main-content" className="skip-link">
           Skip to content

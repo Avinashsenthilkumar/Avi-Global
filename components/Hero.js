@@ -84,7 +84,7 @@ export default function Hero({ revealed }) {
               <Link
                 href="/contact"
                 data-cursor="hover"
-                className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-full bg-graphite px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-white"
+                className="group inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-full bg-graphite px-8 py-4 text-[12px] font-medium uppercase tracking-[0.18em] text-white dark:bg-snow dark:text-coal"
               >
                 Start a Project
                 <span className="grid h-6 w-6 place-items-center rounded-full bg-ember-gradient transition-transform duration-500 ease-out group-hover:rotate-[-45deg]">

@@ -7,8 +7,22 @@
 /* ------------------------------------------------------------------ */
 
 :root {
-  --paper: #f1f2f4;
-  --graphite: #0d0f12;
+  /* Theme tokens (RGB triples so Tailwind opacity modifiers work). */
+  --c-paper: 241 242 244;
+  --c-paper-2: 232 234 238;
+  --c-paper-3: 221 224 229;
+  --c-surface: 255 255 255;
+  --c-ink: 13 15 18;
+  --c-panel: 13 15 18;
+  --c-panel-2: 22 25 30;
+  --c-panel-3: 34 38 45;
+  --c-steel: 90 97 108;
+  --c-steel-light: 138 145 156;
+  --logo-filter: none;
+  color-scheme: light;
+
+  --paper: rgb(var(--c-paper));
+  --graphite: rgb(var(--c-ink));
   --ember: #e85d10;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
@@ -19,6 +33,64 @@
   :root {
     --tabbar-h: 64px;
   }
+}
+
+/* Dark theme: a deep graphite page, lifted panels and cards, light ink. */
+.dark {
+  --c-paper: 10 11 14;
+  --c-paper-2: 17 19 23;
+  --c-paper-3: 27 30 36;
+  --c-surface: 21 24 29;
+  --c-ink: 236 238 241;
+  --c-panel: 24 27 33;
+  --c-panel-2: 31 35 42;
+  --c-panel-3: 44 49 58;
+  --c-steel: 160 167 178;
+  --c-steel-light: 116 123 134;
+  /* The logo's small dark "SOLUTIONS" line gets a faint light edge so it
+     stays readable on dark — the artwork itself is untouched. */
+  --logo-filter: drop-shadow(0 0 0.6px rgba(255, 255, 255, 0.75)) drop-shadow(0 0 6px rgba(255, 255, 255, 0.06));
+  color-scheme: dark;
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme switch — ink transition                                      */
+/* ------------------------------------------------------------------ */
+/* The new theme is revealed through an ink blot that blooms from the
+   toggle in the top-right corner and floods the page. It uses the View
+   Transitions API: the browser snapshots the old page, we flip the theme,
+   and the new page is shown through an animated mask (a 36-frame sprite in
+   /public/theme/ink-mask.png, stepped like a flipbook). Browsers without
+   the API simply switch instantly. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-ink::view-transition-new(root) {
+  -webkit-mask-image: url("/theme/ink-mask.png");
+  mask-image: url("/theme/ink-mask.png");
+  -webkit-mask-size: 3600% 100%;
+  mask-size: 3600% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 0% 0;
+  mask-position: 0% 0;
+  animation: inkReveal 1.6s steps(35, end) forwards;
+}
+@keyframes inkReveal {
+  from {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
+  to {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+}
+
+.logo-img {
+  filter: var(--logo-filter);
 }
 
 html {
@@ -88,7 +160,7 @@ html.lenis body {
   left: 1rem;
   top: 1rem;
   padding: 0.75rem 1.25rem;
-  background: var(--graphite);
+  background: rgb(var(--c-panel));
   color: #fff;
   border-radius: 999px;
   font-size: 12px;
@@ -284,7 +356,7 @@ html.lenis body {
 }
 
 .dot-grid {
-  background-image: radial-gradient(rgba(13, 15, 18, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgb(var(--c-ink) / 0.12) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 

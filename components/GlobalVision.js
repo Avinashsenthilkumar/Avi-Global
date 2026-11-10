@@ -33,14 +33,14 @@ export default function GlobalVision() {
         </div>
 
         <div className="relative mx-auto aspect-square w-full max-w-[520px]">
-          <div className="absolute inset-[8%] rounded-full bg-gradient-to-br from-white to-paper-3 shadow-[inset_-30px_-40px_80px_rgba(13,15,18,0.10),0_40px_80px_-40px_rgba(13,15,18,0.35)]" />
+          <div className="absolute inset-[8%] rounded-full bg-gradient-to-br from-white to-paper-3 dark:from-[#2B3038] dark:to-paper-2 shadow-[inset_-30px_-40px_80px_rgba(13,15,18,0.10),0_40px_80px_-40px_rgba(13,15,18,0.35)]" />
           <svg viewBox="0 0 440 440" className="absolute inset-0 h-full w-full" data-draw="" aria-hidden="true">
             <defs>
               <clipPath id="globe-clip">
                 <circle cx="220" cy="220" r="185" />
               </clipPath>
             </defs>
-            <g fill="none" stroke="rgba(13,15,18,0.16)" strokeWidth="1" clipPath="url(#globe-clip)">
+            <g fill="none" style={{ stroke: "rgb(var(--c-ink) / 0.16)" }} strokeWidth="1" clipPath="url(#globe-clip)">
               <circle cx="220" cy="220" r="185" style={{ "--len": 1170 }} />
               {[40, 80, 120, 160].map((rx, i) => (
                 <ellipse key={`m${rx}`} cx="220" cy="220" rx={rx} ry="185" style={{ "--len": 1170, "--d": `${i * 120}ms` }} />

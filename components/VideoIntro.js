@@ -97,7 +97,7 @@ export default function VideoIntro({ onComplete }) {
         <div className="animate-[fadeLogo_1.2s_cubic-bezier(0.22,1,0.36,1)_both]">
           <Logo variant="full" priority height={240} className="h-44 md:h-60 w-auto" />
         </div>
-        <div className="h-px w-40 overflow-hidden bg-white/10">
+        <div className="h-px w-40 overflow-hidden bg-snow/10">
           <div className="h-full w-full origin-left bg-ember-gradient animate-[growLine_1.4s_cubic-bezier(0.76,0,0.24,1)_both]" />
         </div>
       </div>

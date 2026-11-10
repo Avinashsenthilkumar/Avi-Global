@@ -83,7 +83,7 @@ export default function Footer() {
           <svg viewBox="0 0 1000 150" className="block h-auto w-full" preserveAspectRatio="xMidYMid meet">
             <defs>
               <linearGradient id="footer-wordmark" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stopColor="#0D0F12" stopOpacity="0.28" />
+                <stop offset="0" style={{ stopColor: "rgb(var(--c-ink))" }} stopOpacity="0.28" />
                 <stop offset="0.55" stopColor="#B4320F" stopOpacity="0.45" />
                 <stop offset="1" stopColor="#E85D10" stopOpacity="0.55" />
               </linearGradient>

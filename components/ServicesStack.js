@@ -111,7 +111,7 @@ export default function ServicesStack({ services }) {
                     </div>
                     <div className="md:col-span-4">
                       {s.example ? (
-                        <div className={`rounded-2xl border-l-2 border-ember p-5 text-sm leading-relaxed ${dark ? "bg-white/[0.05] text-white/75" : "bg-paper text-steel"}`}>
+                        <div className={`rounded-2xl border-l-2 border-ember p-5 text-sm leading-relaxed ${dark ? "bg-snow/[0.05] text-white/75" : "bg-paper text-steel"}`}>
                           <span className="label mb-2 block text-ember">In practice</span>
                           {s.example}
                         </div>

@@ -68,7 +68,7 @@ export default function Marquee({ items, tone = "dark" }) {
             <span
               key={`b${i}`}
               className={`flex items-center gap-8 pr-8 font-display text-4xl md:text-6xl uppercase italic whitespace-nowrap ${
-                dark ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.45)]" : "text-transparent [-webkit-text-stroke:1px_rgba(13,15,18,0.4)]"
+                dark ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.45)]" : "text-transparent [-webkit-text-stroke:1px_rgb(var(--c-ink)/0.4)]"
               }`}
             >
               {item}

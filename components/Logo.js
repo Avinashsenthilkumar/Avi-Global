@@ -41,7 +41,7 @@ export default function Logo({ className = "h-8 w-auto", variant = "compact", pr
       decoding="async"
       loading={priority ? "eager" : "lazy"}
       fetchPriority={priority ? "high" : undefined}
-      className={`object-contain ${className}`}
+      className={`logo-img object-contain ${className}`}
       draggable={false}
     />
   );
