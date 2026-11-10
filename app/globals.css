@@ -56,15 +56,14 @@
 /* ------------------------------------------------------------------ */
 /* Theme switch — ink transition                                      */
 /* ------------------------------------------------------------------ */
-/* "Venom" switch: the new theme crawls over the old one as a living band
-   of liquid — streaks and tendrils stretched along its edge, reaching ahead
-   and leaving marbled gaps behind — sweeping out from the toggle in the
-   top-right corner. It uses the View Transitions API: the browser snapshots
-   the old page, we flip the theme, and the new page is shown through an
-   animated mask. The mask is a 48-frame flipbook (8 x 6 grid in
-   /public/theme/venom-mask.webp, generated procedurally — the edge writhes
-   frame to frame instead of just growing). Browsers without the API simply
-   switch instantly. */
+/* "Venom" switch: an ink splat bursts out of the toggle (top-right) and
+   floods the page — spiky fingers pointing outward, a wide band of smeared,
+   half-transparent streaks and marbled gaps at the edge, droplets thrown
+   ahead; a fast first burst and a long soft tail (~1.9 s). It uses the View
+   Transitions API: the browser snapshots the old page, we flip the theme,
+   and the new page is shown through an animated mask — a 56-frame flipbook
+   (8 x 7 grid in /public/theme/venom-mask.webp, generated procedurally).
+   Browsers without the API simply switch instantly. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -73,62 +72,70 @@
 html.theme-ink::view-transition-new(root) {
   -webkit-mask-image: url("/theme/venom-mask.webp");
   mask-image: url("/theme/venom-mask.webp");
-  -webkit-mask-size: 800% 600%;
-  mask-size: 800% 600%;
+  -webkit-mask-size: 800% 700%;
+  mask-size: 800% 700%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-position: 0% 0%;
   mask-position: 0% 0%;
-  animation: venomReveal 1.7s steps(1, end) forwards;
+  animation: venomReveal 1.9s steps(1, end) forwards;
 }
 @keyframes venomReveal {
   0.0% { -webkit-mask-position: 0.0% 0.0%; mask-position: 0.0% 0.0%; }
-  2.128% { -webkit-mask-position: 14.2857% 0.0%; mask-position: 14.2857% 0.0%; }
-  4.255% { -webkit-mask-position: 28.5714% 0.0%; mask-position: 28.5714% 0.0%; }
-  6.383% { -webkit-mask-position: 42.8571% 0.0%; mask-position: 42.8571% 0.0%; }
-  8.511% { -webkit-mask-position: 57.1429% 0.0%; mask-position: 57.1429% 0.0%; }
-  10.638% { -webkit-mask-position: 71.4286% 0.0%; mask-position: 71.4286% 0.0%; }
-  12.766% { -webkit-mask-position: 85.7143% 0.0%; mask-position: 85.7143% 0.0%; }
-  14.894% { -webkit-mask-position: 100.0% 0.0%; mask-position: 100.0% 0.0%; }
-  17.021% { -webkit-mask-position: 0.0% 20.0%; mask-position: 0.0% 20.0%; }
-  19.149% { -webkit-mask-position: 14.2857% 20.0%; mask-position: 14.2857% 20.0%; }
-  21.277% { -webkit-mask-position: 28.5714% 20.0%; mask-position: 28.5714% 20.0%; }
-  23.404% { -webkit-mask-position: 42.8571% 20.0%; mask-position: 42.8571% 20.0%; }
-  25.532% { -webkit-mask-position: 57.1429% 20.0%; mask-position: 57.1429% 20.0%; }
-  27.66% { -webkit-mask-position: 71.4286% 20.0%; mask-position: 71.4286% 20.0%; }
-  29.787% { -webkit-mask-position: 85.7143% 20.0%; mask-position: 85.7143% 20.0%; }
-  31.915% { -webkit-mask-position: 100.0% 20.0%; mask-position: 100.0% 20.0%; }
-  34.043% { -webkit-mask-position: 0.0% 40.0%; mask-position: 0.0% 40.0%; }
-  36.17% { -webkit-mask-position: 14.2857% 40.0%; mask-position: 14.2857% 40.0%; }
-  38.298% { -webkit-mask-position: 28.5714% 40.0%; mask-position: 28.5714% 40.0%; }
-  40.426% { -webkit-mask-position: 42.8571% 40.0%; mask-position: 42.8571% 40.0%; }
-  42.553% { -webkit-mask-position: 57.1429% 40.0%; mask-position: 57.1429% 40.0%; }
-  44.681% { -webkit-mask-position: 71.4286% 40.0%; mask-position: 71.4286% 40.0%; }
-  46.809% { -webkit-mask-position: 85.7143% 40.0%; mask-position: 85.7143% 40.0%; }
-  48.936% { -webkit-mask-position: 100.0% 40.0%; mask-position: 100.0% 40.0%; }
-  51.064% { -webkit-mask-position: 0.0% 60.0%; mask-position: 0.0% 60.0%; }
-  53.191% { -webkit-mask-position: 14.2857% 60.0%; mask-position: 14.2857% 60.0%; }
-  55.319% { -webkit-mask-position: 28.5714% 60.0%; mask-position: 28.5714% 60.0%; }
-  57.447% { -webkit-mask-position: 42.8571% 60.0%; mask-position: 42.8571% 60.0%; }
-  59.574% { -webkit-mask-position: 57.1429% 60.0%; mask-position: 57.1429% 60.0%; }
-  61.702% { -webkit-mask-position: 71.4286% 60.0%; mask-position: 71.4286% 60.0%; }
-  63.83% { -webkit-mask-position: 85.7143% 60.0%; mask-position: 85.7143% 60.0%; }
-  65.957% { -webkit-mask-position: 100.0% 60.0%; mask-position: 100.0% 60.0%; }
-  68.085% { -webkit-mask-position: 0.0% 80.0%; mask-position: 0.0% 80.0%; }
-  70.213% { -webkit-mask-position: 14.2857% 80.0%; mask-position: 14.2857% 80.0%; }
-  72.34% { -webkit-mask-position: 28.5714% 80.0%; mask-position: 28.5714% 80.0%; }
-  74.468% { -webkit-mask-position: 42.8571% 80.0%; mask-position: 42.8571% 80.0%; }
-  76.596% { -webkit-mask-position: 57.1429% 80.0%; mask-position: 57.1429% 80.0%; }
-  78.723% { -webkit-mask-position: 71.4286% 80.0%; mask-position: 71.4286% 80.0%; }
-  80.851% { -webkit-mask-position: 85.7143% 80.0%; mask-position: 85.7143% 80.0%; }
-  82.979% { -webkit-mask-position: 100.0% 80.0%; mask-position: 100.0% 80.0%; }
-  85.106% { -webkit-mask-position: 0.0% 100.0%; mask-position: 0.0% 100.0%; }
-  87.234% { -webkit-mask-position: 14.2857% 100.0%; mask-position: 14.2857% 100.0%; }
-  89.362% { -webkit-mask-position: 28.5714% 100.0%; mask-position: 28.5714% 100.0%; }
-  91.489% { -webkit-mask-position: 42.8571% 100.0%; mask-position: 42.8571% 100.0%; }
-  93.617% { -webkit-mask-position: 57.1429% 100.0%; mask-position: 57.1429% 100.0%; }
-  95.745% { -webkit-mask-position: 71.4286% 100.0%; mask-position: 71.4286% 100.0%; }
-  97.872% { -webkit-mask-position: 85.7143% 100.0%; mask-position: 85.7143% 100.0%; }
+  1.818% { -webkit-mask-position: 14.2857% 0.0%; mask-position: 14.2857% 0.0%; }
+  3.636% { -webkit-mask-position: 28.5714% 0.0%; mask-position: 28.5714% 0.0%; }
+  5.455% { -webkit-mask-position: 42.8571% 0.0%; mask-position: 42.8571% 0.0%; }
+  7.273% { -webkit-mask-position: 57.1429% 0.0%; mask-position: 57.1429% 0.0%; }
+  9.091% { -webkit-mask-position: 71.4286% 0.0%; mask-position: 71.4286% 0.0%; }
+  10.909% { -webkit-mask-position: 85.7143% 0.0%; mask-position: 85.7143% 0.0%; }
+  12.727% { -webkit-mask-position: 100.0% 0.0%; mask-position: 100.0% 0.0%; }
+  14.545% { -webkit-mask-position: 0.0% 16.6667%; mask-position: 0.0% 16.6667%; }
+  16.364% { -webkit-mask-position: 14.2857% 16.6667%; mask-position: 14.2857% 16.6667%; }
+  18.182% { -webkit-mask-position: 28.5714% 16.6667%; mask-position: 28.5714% 16.6667%; }
+  20.0% { -webkit-mask-position: 42.8571% 16.6667%; mask-position: 42.8571% 16.6667%; }
+  21.818% { -webkit-mask-position: 57.1429% 16.6667%; mask-position: 57.1429% 16.6667%; }
+  23.636% { -webkit-mask-position: 71.4286% 16.6667%; mask-position: 71.4286% 16.6667%; }
+  25.455% { -webkit-mask-position: 85.7143% 16.6667%; mask-position: 85.7143% 16.6667%; }
+  27.273% { -webkit-mask-position: 100.0% 16.6667%; mask-position: 100.0% 16.6667%; }
+  29.091% { -webkit-mask-position: 0.0% 33.3333%; mask-position: 0.0% 33.3333%; }
+  30.909% { -webkit-mask-position: 14.2857% 33.3333%; mask-position: 14.2857% 33.3333%; }
+  32.727% { -webkit-mask-position: 28.5714% 33.3333%; mask-position: 28.5714% 33.3333%; }
+  34.545% { -webkit-mask-position: 42.8571% 33.3333%; mask-position: 42.8571% 33.3333%; }
+  36.364% { -webkit-mask-position: 57.1429% 33.3333%; mask-position: 57.1429% 33.3333%; }
+  38.182% { -webkit-mask-position: 71.4286% 33.3333%; mask-position: 71.4286% 33.3333%; }
+  40.0% { -webkit-mask-position: 85.7143% 33.3333%; mask-position: 85.7143% 33.3333%; }
+  41.818% { -webkit-mask-position: 100.0% 33.3333%; mask-position: 100.0% 33.3333%; }
+  43.636% { -webkit-mask-position: 0.0% 50.0%; mask-position: 0.0% 50.0%; }
+  45.455% { -webkit-mask-position: 14.2857% 50.0%; mask-position: 14.2857% 50.0%; }
+  47.273% { -webkit-mask-position: 28.5714% 50.0%; mask-position: 28.5714% 50.0%; }
+  49.091% { -webkit-mask-position: 42.8571% 50.0%; mask-position: 42.8571% 50.0%; }
+  50.909% { -webkit-mask-position: 57.1429% 50.0%; mask-position: 57.1429% 50.0%; }
+  52.727% { -webkit-mask-position: 71.4286% 50.0%; mask-position: 71.4286% 50.0%; }
+  54.545% { -webkit-mask-position: 85.7143% 50.0%; mask-position: 85.7143% 50.0%; }
+  56.364% { -webkit-mask-position: 100.0% 50.0%; mask-position: 100.0% 50.0%; }
+  58.182% { -webkit-mask-position: 0.0% 66.6667%; mask-position: 0.0% 66.6667%; }
+  60.0% { -webkit-mask-position: 14.2857% 66.6667%; mask-position: 14.2857% 66.6667%; }
+  61.818% { -webkit-mask-position: 28.5714% 66.6667%; mask-position: 28.5714% 66.6667%; }
+  63.636% { -webkit-mask-position: 42.8571% 66.6667%; mask-position: 42.8571% 66.6667%; }
+  65.455% { -webkit-mask-position: 57.1429% 66.6667%; mask-position: 57.1429% 66.6667%; }
+  67.273% { -webkit-mask-position: 71.4286% 66.6667%; mask-position: 71.4286% 66.6667%; }
+  69.091% { -webkit-mask-position: 85.7143% 66.6667%; mask-position: 85.7143% 66.6667%; }
+  70.909% { -webkit-mask-position: 100.0% 66.6667%; mask-position: 100.0% 66.6667%; }
+  72.727% { -webkit-mask-position: 0.0% 83.3333%; mask-position: 0.0% 83.3333%; }
+  74.545% { -webkit-mask-position: 14.2857% 83.3333%; mask-position: 14.2857% 83.3333%; }
+  76.364% { -webkit-mask-position: 28.5714% 83.3333%; mask-position: 28.5714% 83.3333%; }
+  78.182% { -webkit-mask-position: 42.8571% 83.3333%; mask-position: 42.8571% 83.3333%; }
+  80.0% { -webkit-mask-position: 57.1429% 83.3333%; mask-position: 57.1429% 83.3333%; }
+  81.818% { -webkit-mask-position: 71.4286% 83.3333%; mask-position: 71.4286% 83.3333%; }
+  83.636% { -webkit-mask-position: 85.7143% 83.3333%; mask-position: 85.7143% 83.3333%; }
+  85.455% { -webkit-mask-position: 100.0% 83.3333%; mask-position: 100.0% 83.3333%; }
+  87.273% { -webkit-mask-position: 0.0% 100.0%; mask-position: 0.0% 100.0%; }
+  89.091% { -webkit-mask-position: 14.2857% 100.0%; mask-position: 14.2857% 100.0%; }
+  90.909% { -webkit-mask-position: 28.5714% 100.0%; mask-position: 28.5714% 100.0%; }
+  92.727% { -webkit-mask-position: 42.8571% 100.0%; mask-position: 42.8571% 100.0%; }
+  94.545% { -webkit-mask-position: 57.1429% 100.0%; mask-position: 57.1429% 100.0%; }
+  96.364% { -webkit-mask-position: 71.4286% 100.0%; mask-position: 71.4286% 100.0%; }
+  98.182% { -webkit-mask-position: 85.7143% 100.0%; mask-position: 85.7143% 100.0%; }
   100.0% { -webkit-mask-position: 100.0% 100.0%; mask-position: 100.0% 100.0%; }
 }
 
